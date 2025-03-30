@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro Completo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="./logo-cepreuna.png" alt="Logo" class="logo">
+        </div>
+        
+        <h1>Formulario de Registro</h1>
+        
+        <form id="registroForm">
+            <fieldset>
+                <legend>Datos Personales</legend>
+                
+                <div class="form-group">
+                    <label for="dni" class="required">Número de DNI</label>
+                    <input type="number" id="dni" name="dni" required min="1000000" max="99999999" placeholder="Solo números (8 dígitos)">
+                    <div id="dni-error" class="error"></div>
+                    <div id="dni-loading" class="loading" style="display: none;">Consultando datos del DNI...</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nombres" class="required">Nombres</label>
+                    <input type="text" id="nombres" name="nombres" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apellido_paterno" class="required">Apellido Paterno</label>
+                    <input type="text" id="apellido_paterno" name="apellido_paterno" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apellido_materno" class="required">Apellido Materno</label>
+                    <input type="text" id="apellido_materno" name="apellido_materno" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Sexo</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="sexo_m" name="sexo" value="M" required>
+                            <label for="sexo_m">Masculino (M)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sexo_f" name="sexo" value="F">
+                            <label for="sexo_f">Femenino (F)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fecha_nacimiento" class="required">Fecha de Nacimiento</label>
+                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="required">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="celular" class="required">Celular (WhatsApp)</label>
+                    <input type="tel" id="celular" name="celular" required min="900000000" max="999999999" placeholder="Solo números (9 dígitos)">
+                    <div id="celular-error" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="direccion" class="required">Dirección Actual</label>
+                    <textarea id="direccion" name="direccion" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ruc" class="required">RUC</label>
+                    <input type="number" id="ruc" name="ruc" required min="10000000000" max="99999999999" placeholder="Solo números (11 dígitos)">
+                    <div id="ruc-error" class="error"></div>
+                    <div id="ruc-loading" class="loading" style="display: none;">Consultando datos del RUC...</div>
+                    <div id="ruc-info" class="api-info" style="display: none;">
+                        <div id="ruc-activo"></div>
+                        <div id="ruc-habido"></div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Datos Bancarios</legend>
+                
+                <div class="form-group">
+                    <label for="banco" class="required">Banco Comercial</label>
+                    <select id="banco" name="banco" required>
+                        <option value="">Seleccione un banco</option>
+                        <option value="BCP">BCP</option>
+                        <option value="Interbank">Interbank</option>
+                        <option value="BBVA">BBVA</option>
+                        <option value="ScotiaBank">ScotiaBank</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cci" class="required">CCI</label>
+                    <input type="number" id="cci" name="cci" required placeholder="Número de 20 dígitos">
+                    <div id="cci-error" class="error"></div>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Documentos</legend>
+                
+                <div class="form-group">
+                    <label class="required">Foto</label>
+                    <div class="file-upload">
+                        <div class="file-upload-btn">
+                            <p>Haz clic para subir tu foto</p>
+                            <p><small>Formatos aceptados: JPG, PNG (Máx. 2MB)</small></p>
+                            <img id="preview" class="preview-image" alt="Vista previa de la imagen">
+                        </div>
+                        <input type="file" id="foto" name="foto" accept="image/jpeg,image/png" required>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <div class="form-group">
+                <label class="required">¿Es padre/madre de familia?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="padre_si" name="padre_familia" value="Si" required>
+                        <label for="padre_si">Sí</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="padre_no" name="padre_familia" value="No">
+                        <label for="padre_no">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit">Enviar Formulario</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
