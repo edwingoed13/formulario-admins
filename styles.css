@@ -189,6 +189,72 @@ button:hover {
     margin-bottom: 5px;
 }
 
+.datos-laborales-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.datos-laborales-group {
+    background-color: #f8fafc;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.datos-laborales-group h3 {
+    color: var(--dark-color);
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+}
+
+/* Estilos para grupos de checkboxes */
+.checkbox-group-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    transition: var(--transition);
+}
+
+.checkbox-option:hover {
+    border-color: var(--primary-color);
+    background-color: #f0f7ff;
+}
+
+.checkbox-option input {
+    margin-right: 8px;
+}
+
+/* Estilos para el campo de cargo */
+.cargo-input-container {
+    margin-top: 20px;
+}
+
+.cargo-input-container input {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    padding: 12px 15px;
+}
+
 .file-upload {
     position: relative;
     overflow: hidden;
@@ -263,6 +329,38 @@ button:hover {
     color: #00C851;
 }
 
+/* Estilos para el footer */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 0.9em;
+}
+
+.footer p {
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .footer {
+        margin-top: 30px;
+        padding-top: 15px;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .container {
@@ -291,5 +389,29 @@ button:hover {
     
     h1 {
         font-size: 1.5em;
+    }
+}
+@media (min-width: 768px) {
+    .datos-laborales-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .checkbox-group-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .datos-laborales-group {
+        padding: 15px;
+    }
+    
+    .checkbox-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .checkbox-option {
+        width: 100%;
     }
 }

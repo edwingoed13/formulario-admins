@@ -1,6 +1,6 @@
 // Configuración
 const API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzZmxvcmVzQGNlcHJldW5hLmVkdS5wZSJ9.TJDxZrXcWCbPiVadus5RmBWVky6MmsYEl5cxs0VXUdU';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzY4KA3iVEqbeQNt0qq8l4M2_nRIn-bWADxSDcukE247xOSS3jFvltAQG1POswS5tXtHA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz36HNm21trsB35A7AybwNBNgAhhHvmj1USJdGv9cFUq56PRC9Q75Oou_NxIe_mge719g/exec';
 
 // Variables para almacenar datos del RUC
 let rucActivo = 'No';
@@ -13,7 +13,6 @@ function mostrarMensaje(tipo, mensaje) {
     mensajeDiv.className = `mensaje-${tipo}`;
     mensajeDiv.textContent = mensaje;
     
-    // Estilos para el mensaje
     mensajeDiv.style.position = 'fixed';
     mensajeDiv.style.bottom = '20px';
     mensajeDiv.style.right = '20px';
@@ -26,14 +25,13 @@ function mostrarMensaje(tipo, mensaje) {
     mensajeDiv.style.animation = 'fadeIn 0.5s';
     
     if (tipo === 'exito') {
-        mensajeDiv.style.backgroundColor = '#4CAF50'; // Verde
+        mensajeDiv.style.backgroundColor = '#4CAF50';
     } else {
-        mensajeDiv.style.backgroundColor = '#F44336'; // Rojo
+        mensajeDiv.style.backgroundColor = '#F44336';
     }
     
     document.body.appendChild(mensajeDiv);
     
-    // Eliminar el mensaje después de 5 segundos
     setTimeout(() => {
         mensajeDiv.style.animation = 'fadeOut 0.5s';
         setTimeout(() => {
@@ -42,7 +40,7 @@ function mostrarMensaje(tipo, mensaje) {
     }, 5000);
 }
 
-// Agrega estos estilos al head del documento
+// Agrega estilos al head del documento
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeIn {
@@ -115,46 +113,6 @@ function validarLongitud(input, longitud) {
     }
 }
 
-// Consultar API de DNI
-async function consultarDNI(dni) {
-    const nombresInput = document.getElementById('nombres');
-    const apellidoPaternoInput = document.getElementById('apellido_paterno');
-    const apellidoMaternoInput = document.getElementById('apellido_materno');
-    const loadingElement = document.getElementById('dni-loading');
-    const errorElement = document.getElementById('dni-error');
-    
-    loadingElement.style.display = 'block';
-    errorElement.textContent = '';
-    
-    try {
-        const response = await fetch(`https://dniruc.apisperu.com/api/v1/dni/${dni}?token=${API_TOKEN}`);
-        const data = await response.json();
-        
-        if (data.nombres && data.apellidoPaterno && data.apellidoMaterno) {
-            nombresInput.value = data.nombres;
-            apellidoPaternoInput.value = data.apellidoPaterno;
-            apellidoMaternoInput.value = data.apellidoMaterno;
-            
-            // Auto-seleccionar sexo si está disponible
-            if (data.sexo) {
-                const sexoInput = document.getElementById(data.sexo === 'M' ? 'sexo_m' : 'sexo_f');
-                if (sexoInput) sexoInput.checked = true;
-            }
-        } else {
-            errorElement.textContent = 'No se encontraron datos para este DNI o está vencido';
-            // Limpiamos los campos solo si están vacíos para no perder datos manuales
-            if (!nombresInput.value) nombresInput.value = '';
-            if (!apellidoPaternoInput.value) apellidoPaternoInput.value = '';
-            if (!apellidoMaternoInput.value) apellidoMaternoInput.value = '';
-        }
-    } catch (error) {
-        errorElement.textContent = 'Error al consultar el DNI. Intente nuevamente.';
-        console.error('Error al consultar DNI:', error);
-    } finally {
-        loadingElement.style.display = 'none';
-    }
-}
-
 // Consultar API de RUC
 async function consultarRUC(ruc) {
     const loadingElement = document.getElementById('ruc-loading');
@@ -172,11 +130,9 @@ async function consultarRUC(ruc) {
         const data = await response.json();
         
         if (data.razonSocial) {
-            // Actualizar variables para el envío al servidor
             rucActivo = data.estado === 'ACTIVO' ? 'Si' : 'No';
             rucHabido = data.condicion === 'HABIDO' ? 'Si' : 'No';
             
-            // Mostrar información al usuario
             infoElement.style.display = 'block';
             activoElement.innerHTML = `<strong>Activo:</strong> ${rucActivo}`;
             habidoElement.innerHTML = `<strong>Habido:</strong> ${rucHabido}`;
@@ -214,7 +170,7 @@ async function enviarFormulario(formData) {
 document.getElementById('registroForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Validar todos los campos requeridos
+    // 1. Validaciones
     let isValid = true;
     
     // Validar DNI (8 dígitos)
@@ -245,18 +201,23 @@ document.getElementById('registroForm').addEventListener('submit', async functio
         isValid = false;
     }
     
-    // Validar que se haya seleccionado una foto
+    // Validar cargo (obligatorio)
+    const cargo = document.getElementById('cargo').value;
+    if (!cargo || cargo.trim() === '') {
+        mostrarMensaje('error', 'Por favor, ingrese su cargo');
+        isValid = false;
+    }
+    
+    // Validar foto (obligatorio)
     const fotoInput = document.getElementById('foto');
     if (!fotoInput.files[0]) {
         mostrarMensaje('error', 'Por favor, seleccione una foto');
         isValid = false;
     }
     
-    if (!isValid) {
-        return;
-    }
-    
-    // Mostrar mensaje de envío
+    if (!isValid) return;
+
+    // 2. Preparar envío
     const submitBtn = this.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
@@ -265,12 +226,12 @@ document.getElementById('registroForm').addEventListener('submit', async functio
         // Procesar imagen
         const imagenData = await procesarImagen(fotoInput.files[0]);
         
-        // Preparar datos
+        // Construir objeto con TODOS los campos
         const formData = {
             nombres: document.getElementById('nombres').value,
             apellido_paterno: document.getElementById('apellido_paterno').value,
             apellido_materno: document.getElementById('apellido_materno').value,
-            sexo: document.querySelector('input[name="sexo"]:checked').value,
+            sexo: document.querySelector('input[name="sexo"]:checked')?.value || '',
             dni: dni.value,
             fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
             email: document.getElementById('email').value,
@@ -279,14 +240,21 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             ruc: ruc.value,
             ruc_activo: rucActivo,
             ruc_habido: rucHabido,
+            sede: document.getElementById('sede').value || '', // Campo de texto
+            turno: document.getElementById('turno').value || '', // Campo de texto
+            area: document.getElementById('area').value || '', // Campo de texto
+            cargo: cargo,
             banco: document.getElementById('banco').value,
             cci: cci.value,
-            padre_familia: document.querySelector('input[name="padre_familia"]:checked').value,
-            fotoBase64: imagenData?.base64,
-            fotoType: imagenData?.type
+            padre_familia: document.querySelector('input[name="padre_familia"]:checked')?.value || 'No',
+            talla_vestimenta: document.getElementById('talla_vestimenta').value,
+            fotoBase64: imagenData?.base64 || '',
+            fotoType: imagenData?.type || ''
         };
+
+        console.log('Datos a enviar:', formData); // Para depuración
         
-        // Enviar datos
+        // 3. Enviar datos
         const resultado = await enviarFormulario(formData);
         
         if (resultado.success) {
@@ -298,8 +266,8 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             throw new Error(resultado.error || 'Error al enviar el formulario');
         }
     } catch (error) {
+        console.error('Error en el envío:', error);
         mostrarMensaje('error', 'Error: ' + error.message);
-        console.error('Error:', error);
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Enviar Formulario';
@@ -310,7 +278,6 @@ document.getElementById('registroForm').addEventListener('submit', async functio
 document.getElementById('dni').addEventListener('input', function() {
     validarSoloNumeros(this);
     validarLongitud(this, 8);
-    if (this.value.length === 8) consultarDNI(this.value);
 });
 
 document.getElementById('celular').addEventListener('input', function() {

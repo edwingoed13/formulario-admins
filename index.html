@@ -14,6 +14,7 @@
         </div>
         
         <h1>Formulario de Registro</h1>
+        <h2>Personal Administrativo</h2>
         
         <form id="registroForm">
             <fieldset>
@@ -23,7 +24,6 @@
                     <label for="dni" class="required">Número de DNI</label>
                     <input type="number" id="dni" name="dni" required min="1000000" max="99999999" placeholder="Solo números (8 dígitos)">
                     <div id="dni-error" class="error"></div>
-                    <div id="dni-loading" class="loading" style="display: none;">Consultando datos del DNI...</div>
                 </div>
                 
                 <div class="form-group">
@@ -87,7 +87,30 @@
                     </div>
                 </div>
             </fieldset>
-            
+
+            <fieldset>
+                <legend>Datos Laborales</legend>
+                
+                <div class="form-group">
+                    <label for="sede">Sede</label>
+                    <input type="text" id="sede" name="sede" placeholder="Ejemplo: Puno, Juliaca y/o Virtual">
+                </div>
+                
+                <div class="form-group">
+                    <label for="turno">Turno</label>
+                    <input type="text" id="turno" name="turno" placeholder="Ejemplo: Mañana, Tarde y/o Noche">
+                </div>
+                
+                <div class="form-group">
+                    <label for="area">Área</label>
+                    <input type="text" id="area" name="area" placeholder="Ejemplo: Sociales, Ingenierías y/o Biomédicas">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cargo" class="required">Cargo</label>
+                    <input type="text" id="cargo" name="cargo" required placeholder="Ingrese su cargo">
+                </div>
+            </fieldset> 
             <fieldset>
                 <legend>Datos Bancarios</legend>
                 
@@ -113,7 +136,7 @@
                 <legend>Documentos</legend>
                 
                 <div class="form-group">
-                    <label class="required">Foto</label>
+                    <label class="required">Foto personal para credencial</label>
                     <div class="file-upload">
                         <div class="file-upload-btn">
                             <p>Haz clic para subir tu foto</p>
@@ -140,9 +163,29 @@
             </div>
             
             <div class="form-group">
+                <label for="talla_vestimenta" class="required">Talla de Vestimenta</label>
+                <select id="talla_vestimenta" name="talla_vestimenta" required>
+                    <option value="">Seleccione una talla</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
                 <button type="submit">Enviar Formulario</button>
             </div>
         </form>
+
+        <footer class="footer">
+            <p>Oficina de Comunicaciones e Imagen Institucional</p>
+            <p>Elaborado por <strong>Edwin Flores</strong></p>
+            <!-- Opcional: puedes añadir más información aquí -->
+        </footer>
+        
     </div>
 
     <script src="script.js"></script>
