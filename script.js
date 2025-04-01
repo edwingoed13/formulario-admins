@@ -1,6 +1,6 @@
 // Configuración
 const API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzZmxvcmVzQGNlcHJldW5hLmVkdS5wZSJ9.TJDxZrXcWCbPiVadus5RmBWVky6MmsYEl5cxs0VXUdU';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz36HNm21trsB35A7AybwNBNgAhhHvmj1USJdGv9cFUq56PRC9Q75Oou_NxIe_mge719g/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbnXm6gTCNPC0HooSjYwwrpIL1npAG19wVwXSxv-5EXyokBB_uiRtXZR9M_R1w1cQg8g/exec';
 
 // Variables para almacenar datos del RUC
 let rucActivo = 'No';
