@@ -1,6 +1,7 @@
 // Configuración
 const API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzZmxvcmVzQGNlcHJldW5hLmVkdS5wZSJ9.TJDxZrXcWCbPiVadus5RmBWVky6MmsYEl5cxs0VXUdU';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfRSpGCRFq6-83zJbcbpZJdwWB-T9ypFs0AIJAcT4WgcqKrdRw76IPhC-1eAVH-r4fCg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxj8iFYXnCQs-bGrY-CgbbFvLn6dCrHIosNIsRSBgshqAU1vBZjZj00LDVaFG8yxPiQJQ/exec';
+
 // Variables para almacenar datos del RUC
 let rucActivo = 'No';
 let rucHabido = 'No';
@@ -11,6 +12,7 @@ function mostrarMensaje(tipo, mensaje) {
     mensajeDiv.id = 'mensaje-flotante';
     mensajeDiv.className = `mensaje-${tipo}`;
     mensajeDiv.textContent = mensaje;
+    
     mensajeDiv.style.position = 'fixed';
     mensajeDiv.style.bottom = '20px';
     mensajeDiv.style.right = '20px';
@@ -21,12 +23,15 @@ function mostrarMensaje(tipo, mensaje) {
     mensajeDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
     mensajeDiv.style.zIndex = '1000';
     mensajeDiv.style.animation = 'fadeIn 0.5s';
+    
     if (tipo === 'exito') {
         mensajeDiv.style.backgroundColor = '#4CAF50';
     } else {
         mensajeDiv.style.backgroundColor = '#F44336';
     }
+    
     document.body.appendChild(mensajeDiv);
+    
     setTimeout(() => {
         mensajeDiv.style.animation = 'fadeOut 0.5s';
         setTimeout(() => {
@@ -53,6 +58,7 @@ document.head.appendChild(style);
 function previewImage(input) {
     const preview = document.getElementById('preview');
     const file = input.files[0];
+    
     if (file) {
         if (file.size > 2 * 1024 * 1024) {
             mostrarMensaje('error', 'La imagen es demasiado grande (máximo 2MB)');
@@ -60,6 +66,7 @@ function previewImage(input) {
             preview.style.display = 'none';
             return;
         }
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             preview.src = e.target.result;
@@ -75,6 +82,7 @@ function previewImage(input) {
 async function procesarImagen(file) {
     return new Promise((resolve, reject) => {
         if (!file) resolve(null);
+        
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve({
@@ -93,9 +101,11 @@ function validarSoloNumeros(input) {
 // Validar longitud de campo
 function validarLongitud(input, longitud) {
     const errorElement = document.getElementById(`${input.id}-error`);
+    
     if (input.value.length > longitud) {
         input.value = input.value.slice(0, longitud);
     }
+    
     if (input.value.length !== longitud && input.value.length > 0) {
         errorElement.textContent = `Debe tener exactamente ${longitud} dígitos`;
     } else {
@@ -110,15 +120,19 @@ async function consultarRUC(ruc) {
     const infoElement = document.getElementById('ruc-info');
     const activoElement = document.getElementById('ruc-activo');
     const habidoElement = document.getElementById('ruc-habido');
+    
     loadingElement.style.display = 'block';
     errorElement.textContent = '';
     infoElement.style.display = 'none';
+    
     try {
         const response = await fetch(`https://dniruc.apisperu.com/api/v1/ruc/${ruc}?token=${API_TOKEN}`);
         const data = await response.json();
+        
         if (data.razonSocial) {
             rucActivo = data.estado === 'ACTIVO' ? 'Si' : 'No';
             rucHabido = data.condicion === 'HABIDO' ? 'Si' : 'No';
+            
             infoElement.style.display = 'block';
             activoElement.innerHTML = `<strong>Activo:</strong> ${rucActivo}`;
             habidoElement.innerHTML = `<strong>Habido:</strong> ${rucHabido}`;
@@ -133,23 +147,6 @@ async function consultarRUC(ruc) {
     }
 }
 
-// Función para verificar si un DNI ya está registrado
-async function verificarDNI(dni) {
-    try {
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbzfRSpGCRFq6-83zJbcbpZJdwWB-T9ypFs0AIJAcT4WgcqKrdRw76IPhC-1eAVH-r4fCg/exec?dni=${dni}`);
-        const data = await response.json();
-        if (data.exists) {
-            mostrarMensaje('error', 'Usted ya está registrado.');
-            return true; // El DNI ya existe
-        }
-        return false; // El DNI no existe
-    } catch (error) {
-        console.error('Error al verificar DNI:', error);
-        mostrarMensaje('error', 'Error al verificar el DNI. Intente nuevamente.');
-        return true; // Bloquear el formulario por seguridad
-    }
-}
-
 // Enviar datos al servidor
 async function enviarFormulario(formData) {
     try {
@@ -161,6 +158,7 @@ async function enviarFormulario(formData) {
             },
             body: JSON.stringify(formData)
         });
+        
         return { success: true };
     } catch (error) {
         console.error('Error:', error);
@@ -171,77 +169,70 @@ async function enviarFormulario(formData) {
 // Manejador de envío del formulario
 document.getElementById('registroForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
-    // Verificar si el DNI ya está registrado
-    const dni = document.getElementById('dni').value;
-    const dniExiste = await verificarDNI(dni);
-    if (dniExiste) {
-        mostrarMensaje('error', 'Usted ya está registrado.');
-        return;
-    }
-
+    
     // 1. Validaciones
     let isValid = true;
-
+    
     // Validar DNI (8 dígitos)
-    if (dni.length !== 8) {
+    const dni = document.getElementById('dni');
+    if (dni.value.length !== 8) {
         document.getElementById('dni-error').textContent = 'El DNI debe tener 8 dígitos';
         isValid = false;
     }
-
+    
     // Validar celular (9 dígitos)
     const celular = document.getElementById('celular');
     if (celular.value.length !== 9) {
         document.getElementById('celular-error').textContent = 'El celular debe tener 9 dígitos';
         isValid = false;
     }
-
+    
     // Validar RUC (11 dígitos)
     const ruc = document.getElementById('ruc');
     if (ruc.value.length !== 11) {
         document.getElementById('ruc-error').textContent = 'El RUC debe tener 11 dígitos';
         isValid = false;
     }
-
+    
     // Validar CCI (20 dígitos)
     const cci = document.getElementById('cci');
     if (cci.value.length !== 20) {
         document.getElementById('cci-error').textContent = 'El CCI debe tener 20 dígitos';
         isValid = false;
     }
-
+    
     // Validar cargo (obligatorio)
     const cargo = document.getElementById('cargo').value;
     if (!cargo || cargo.trim() === '') {
         mostrarMensaje('error', 'Por favor, ingrese su cargo');
         isValid = false;
     }
-
+    
     // Validar foto (obligatorio)
     const fotoInput = document.getElementById('foto');
     if (!fotoInput.files[0]) {
         mostrarMensaje('error', 'Por favor, seleccione una foto');
         isValid = false;
     }
-
+    
     if (!isValid) return;
 
     // 2. Preparar envío
     const submitBtn = this.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
-
+    
     try {
         // Procesar imagen
         const imagenData = await procesarImagen(fotoInput.files[0]);
-
+        
         // Construir objeto con TODOS los campos
         const formData = {
             nombres: document.getElementById('nombres').value,
             apellido_paterno: document.getElementById('apellido_paterno').value,
             apellido_materno: document.getElementById('apellido_materno').value,
             sexo: document.querySelector('input[name="sexo"]:checked')?.value || '',
-            dni: dni,
+            dni: dni.value,
             fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
             email: document.getElementById('email').value,
             celular: celular.value,
@@ -262,9 +253,10 @@ document.getElementById('registroForm').addEventListener('submit', async functio
         };
 
         console.log('Datos a enviar:', formData); // Para depuración
-
+        
         // 3. Enviar datos
         const resultado = await enviarFormulario(formData);
+        
         if (resultado.success) {
             mostrarMensaje('exito', 'Registro completado exitosamente');
             this.reset();
@@ -283,16 +275,6 @@ document.getElementById('registroForm').addEventListener('submit', async functio
 });
 
 // Event listeners para los campos de entrada
-document.getElementById('dni').addEventListener('blur', async function() {
-    const dni = this.value;
-    if (dni.length === 8) {
-        const dniExiste = await verificarDNI(dni);
-        if (dniExiste) {
-            this.focus(); // Mantener el foco en el campo DNI
-        }
-    }
-});
-
 document.getElementById('dni').addEventListener('input', function() {
     validarSoloNumeros(this);
     validarLongitud(this, 8);
