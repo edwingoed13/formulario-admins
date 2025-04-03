@@ -1,6 +1,6 @@
 // Configuración
 const API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzZmxvcmVzQGNlcHJldW5hLmVkdS5wZSJ9.TJDxZrXcWCbPiVadus5RmBWVky6MmsYEl5cxs0VXUdU';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbnXm6gTCNPC0HooSjYwwrpIL1npAG19wVwXSxv-5EXyokBB_uiRtXZR9M_R1w1cQg8g/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfRSpGCRFq6-83zJbcbpZJdwWB-T9ypFs0AIJAcT4WgcqKrdRw76IPhC-1eAVH-r4fCg/exec';
 // Variables para almacenar datos del RUC
 let rucActivo = 'No';
 let rucHabido = 'No';
@@ -136,7 +136,7 @@ async function consultarRUC(ruc) {
 // Función para verificar si un DNI ya está registrado
 async function verificarDNI(dni) {
     try {
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbwCyKi8ofAZrrKG2o1-SysEoLPVsEMC-koP3uy-96CcUF48GKCCYjpHhmkjNTAkBgxl5w/exec?dni=${dni}`);
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbzfRSpGCRFq6-83zJbcbpZJdwWB-T9ypFs0AIJAcT4WgcqKrdRw76IPhC-1eAVH-r4fCg/exec?dni=${dni}`);
         const data = await response.json();
         if (data.exists) {
             mostrarMensaje('error', 'Usted ya está registrado.');
