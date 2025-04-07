@@ -1,10 +1,72 @@
 // Configuración
 const API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzZmxvcmVzQGNlcHJldW5hLmVkdS5wZSJ9.TJDxZrXcWCbPiVadus5RmBWVky6MmsYEl5cxs0VXUdU';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxj8iFYXnCQs-bGrY-CgbbFvLn6dCrHIosNIsRSBgshqAU1vBZjZj00LDVaFG8yxPiQJQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEtviQ5VmnOHFXiBY8uYBI73kv6V6vPquIb9_L_tq0N1p3nb_5gd-jw5Edw8G8tvRrpA/exec';
 
 // Variables para almacenar datos del RUC
 let rucActivo = 'No';
 let rucHabido = 'No';
+
+// Objetos con las tallas por sexo
+const tallas = {
+    femenino: {
+        casaca: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+        pantalon: ['S', 'M(B)', 'L', 'XL', 'XXL', 'XXXL']
+    },
+    masculino: {
+        casaca: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+        pantalon: ['S', 'M(B)', 'L', 'XL', 'XXL', 'XXXL']
+    }
+};
+
+// Función para actualizar las opciones de tallas según el sexo
+function actualizarTallas() {
+    const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
+    const casacaSelect = document.getElementById('talla_casaca');
+    const pantalonSelect = document.getElementById('talla_pantalon');
+    const guiaFemenino = document.getElementById('guia-femenino');
+    const guiaMasculino = document.getElementById('guia-masculino');
+
+    // Limpiar selects
+    casacaSelect.innerHTML = '<option value="">Seleccione su talla</option>';
+    pantalonSelect.innerHTML = '<option value="">Seleccione su talla</option>';
+
+    // Ocultar todas las guías
+    guiaFemenino.style.display = 'none';
+    guiaMasculino.style.display = 'none';
+
+    if (sexo === 'F') {
+        // Llenar opciones para femenino
+        tallas.femenino.casaca.forEach(talla => {
+            casacaSelect.innerHTML += `<option value="C-${talla}">${talla}</option>`;
+        });
+        tallas.femenino.pantalon.forEach(talla => {
+            pantalonSelect.innerHTML += `<option value="P-${talla}">${talla}</option>`;
+        });
+        guiaFemenino.style.display = 'block';
+    } else if (sexo === 'M') {
+        // Llenar opciones para masculino
+        tallas.masculino.casaca.forEach(talla => {
+            casacaSelect.innerHTML += `<option value="C-${talla}">${talla}</option>`;
+        });
+        tallas.masculino.pantalon.forEach(talla => {
+            pantalonSelect.innerHTML += `<option value="P-${talla}">${talla}</option>`;
+        });
+        guiaMasculino.style.display = 'block';
+    }
+}
+
+// Agrega este event listener para los radio buttons de sexo
+document.querySelectorAll('input[name="sexo"]').forEach(radio => {
+    radio.addEventListener('change', actualizarTallas);
+});
+
+// También llama a la función al cargar la página si ya hay un sexo seleccionado
+document.addEventListener('DOMContentLoaded', function() {
+    const sexoSeleccionado = document.querySelector('input[name="sexo"]:checked');
+    if (sexoSeleccionado) {
+        actualizarTallas();
+    }
+});
 
 // Función para mostrar mensajes en el frontend
 function mostrarMensaje(tipo, mensaje) {
@@ -247,7 +309,8 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             banco: document.getElementById('banco').value,
             cci: cci.value,
             padre_familia: document.querySelector('input[name="padre_familia"]:checked')?.value || 'No',
-            talla_vestimenta: document.getElementById('talla_vestimenta').value,
+            talla_casaca: document.getElementById('talla_casaca').value,
+            talla_pantalon: document.getElementById('talla_pantalon').value,
             fotoBase64: imagenData?.base64 || '',
             fotoType: imagenData?.type || ''
         };

@@ -366,6 +366,42 @@ button:hover {
     color: #00C851;
 }
 
+.tallas-guia {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.tallas-guia h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.imagenes-guia {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.imagen-guia {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+@media (min-width: 768px) {
+    .imagenes-guia {
+        justify-content: space-between;
+    }
+    
+    .imagen-guia {
+        width: calc(50% - 10px);
+    }
+}
+
 /* Estilos para el footer */
 .footer {
     text-align: center;

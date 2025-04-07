@@ -166,19 +166,43 @@
                 </div>
             </div>
             
-            <div class="form-group">
-                <label for="talla_vestimenta" class="required">Talla de Vestimenta</label>
-                <select id="talla_vestimenta" name="talla_vestimenta" required>
-                    <option value="">Seleccione una talla</option>
-                    <option value="XS">XS</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                    <option value="XXXL">XXXL</option>
-                </select>
-            </div>
+            <fieldset>
+                <legend>Tallas de Vestimenta</legend>
+                
+                <div class="form-group">
+                    <label for="talla_casaca" class="required">Talla de Casaca</label>
+                    <select id="talla_casaca" name="talla_casaca" required>
+                        <option value="">Seleccione su talla</option>
+                        <!-- Las opciones se llenarán dinámicamente según el sexo -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="talla_pantalon" class="required">Talla de Pantalón</label>
+                    <select id="talla_pantalon" name="talla_pantalon" required>
+                        <option value="">Seleccione su talla</option>
+                        <!-- Las opciones se llenarán dinámicamente según el sexo -->
+                    </select>
+                </div>
+                
+                <!-- Agregamos imágenes referenciales -->
+                <div class="tallas-guia">
+                    <div id="guia-femenino" style="display: none;">
+                        <h4>Guía de tallas femeninas</h4>
+                        <div class="imagenes-guia">
+                            <img src="casaca-dama.jpg" alt="Medidas casaca dama" class="imagen-guia">
+                            <img src="pantalon-dama.jpg" alt="Medidas pantalón dama" class="imagen-guia">
+                        </div>
+                    </div>
+                    <div id="guia-masculino" style="display: none;">
+                        <h4>Guía de tallas masculinas</h4>
+                        <div class="imagenes-guia">
+                            <img src="casaca-varon.jpg" alt="Medidas casaca varón" class="imagen-guia">
+                            <img src="pantalon-varon.jpg" alt="Medidas pantalón varón" class="imagen-guia">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
             
             <div class="form-group">
                 <button type="submit">Enviar Formulario</button>
