@@ -1,6 +1,6 @@
 // Configuración
 const API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzZmxvcmVzQGNlcHJldW5hLmVkdS5wZSJ9.TJDxZrXcWCbPiVadus5RmBWVky6MmsYEl5cxs0VXUdU';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUKNXv3DtQ0stpavjB6MyWvVAGlWSxKgYvCnBc3lw9X3BgjuKjYDJMZDOWQqcK1jxqvw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUKNXv3DtQ0stpavjB6MyWvVAGlWSxKgYvCnBc3lw9X3BgjuKjYDJMZDOWQqcK1jxqvw/exec'; // Reemplaza con la URL de tu Apps Script actualizado
 
 // Variables para almacenar datos del RUC
 let rucActivo = 'No';
@@ -875,7 +875,12 @@ function verificarDNIInicial(dni) {
     return new Promise((resolve) => {
         const statusElement = document.getElementById('verification-status');
         
+        // LOG 1: Inicio de verificación
+        console.log('🔍 INICIANDO verificarDNIInicial con DNI:', dni);
+        console.log('🔗 SCRIPT_URL configurada:', SCRIPT_URL);
+        
         if (dni.length !== 8) {
+            console.log('❌ DNI inválido - longitud:', dni.length);
             statusElement.innerHTML = '<div style="color: #e74c3c;">El DNI debe tener 8 dígitos</div>';
             resolve(null);
             return;
@@ -885,9 +890,12 @@ function verificarDNIInicial(dni) {
         
         // Crear callback único
         const callbackName = 'verifyCallback' + Date.now();
+        console.log('📞 Callback creado:', callbackName);
         
         // Definir callback global
         window[callbackName] = function(result) {
+            console.log('✅ Respuesta recibida del servidor:', result);
+            
             // Limpiar
             document.head.removeChild(script);
             delete window[callbackName];
@@ -898,15 +906,39 @@ function verificarDNIInicial(dni) {
         
         // Crear script tag para JSONP
         const script = document.createElement('script');
-        script.src = `${SCRIPT_URL}?dni=${dni}&callback=${callbackName}`;
-        script.onerror = function() {
-            statusElement.innerHTML = '<div style="color: #e74c3c;">Error al verificar DNI</div>';
+        const requestUrl = `${SCRIPT_URL}?dni=${dni}&callback=${callbackName}`;
+        
+        console.log('🌐 URL de petición JSONP:', requestUrl);
+        
+        script.src = requestUrl;
+        script.onerror = function(error) {
+            console.error('❌ Error en script JSONP:', error);
+            console.error('❌ URL que falló:', requestUrl);
+            statusElement.innerHTML = '<div style="color: #e74c3c;">Error al verificar DNI - Ver consola</div>';
             document.head.removeChild(script);
             delete window[callbackName];
             resolve(null);
         };
         
+        script.onload = function() {
+            console.log('📜 Script JSONP cargado correctamente');
+        };
+        
+        console.log('📤 Enviando petición JSONP...');
         document.head.appendChild(script);
+        
+        // Timeout de seguridad
+        setTimeout(() => {
+            if (window[callbackName]) {
+                console.warn('⏰ TIMEOUT - No se recibió respuesta en 10 segundos');
+                statusElement.innerHTML = '<div style="color: #e74c3c;">Timeout - Ver consola para detalles</div>';
+                if (document.head.contains(script)) {
+                    document.head.removeChild(script);
+                }
+                delete window[callbackName];
+                resolve(null);
+            }
+        }, 10000);
     });
 }
 
@@ -1080,20 +1112,29 @@ document.getElementById('dni-verificacion').addEventListener('keypress', functio
 
 // Botón verificar DNI
 document.getElementById('btn-verificar-dni').addEventListener('click', async function() {
+    console.log('🚀 CLIC EN BOTÓN VERIFICAR - Iniciando proceso');
+    
     const dni = document.getElementById('dni-verificacion').value;
+    console.log('📝 DNI ingresado:', dni);
     
     if (dni.length !== 8) {
+        console.log('❌ DNI inválido - longitud incorrecta');
         document.getElementById('verification-status').innerHTML = '<div style="color: #e74c3c;">Por favor ingrese 8 dígitos</div>';
         return;
     }
     
+    console.log('✅ DNI válido - procediendo con verificación');
     const result = await verificarDNIInicial(dni);
+    console.log('📄 Resultado de verificarDNIInicial:', result);
     
     if (result && !result.success && result.error === 'DNI_ALREADY_EXISTS') {
+        console.log('👤 DNI existe - mostrando usuario existente');
         mostrarUsuarioExistente(result.existingData);
     } else if (result && result.success) {
+        console.log('🆕 DNI nuevo - mostrando opción de registro');
         mostrarUsuarioNuevo();
     } else {
+        console.log('⚠️ Resultado inesperado o error');
         document.getElementById('verification-status').innerHTML = '<div style="color: #e74c3c;">Error al verificar DNI</div>';
     }
 });
