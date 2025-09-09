@@ -274,7 +274,6 @@ function cargarDatosExistentes() {
     
     // Otros campos (arreglar formato de fecha)
     if (data.fecha_nacimiento) {
-        console.log('Fecha recibida:', data.fecha_nacimiento, typeof data.fecha_nacimiento);
         
         let fechaNacimiento = data.fecha_nacimiento;
         
@@ -300,7 +299,6 @@ function cargarDatosExistentes() {
             }
         }
         
-        console.log('Fecha procesada:', fechaNacimiento);
         document.getElementById('fecha_nacimiento').value = fechaNacimiento;
     }
     document.getElementById('email').value = data.email || '';
@@ -330,10 +328,6 @@ function cargarDatosExistentes() {
     setTimeout(() => {
         document.getElementById('talla_casaca').value = data.talla_casaca || '';
         document.getElementById('talla_pantalon').value = data.talla_pantalon || '';
-        console.log('Tallas cargadas:', {
-            casaca: data.talla_casaca,
-            pantalon: data.talla_pantalon
-        });
         
         // IMPORTANTE: Guardar datos originales DESPUÉS de que todo esté cargado
         let fechaParaComparar = data.fecha_nacimiento;
@@ -372,7 +366,6 @@ function cargarDatosExistentes() {
             talla_pantalon: data.talla_pantalon || ''
         };
         
-        console.log('Datos originales guardados:', originalFormData);
     }, 200); // Aumentar tiempo para asegurar que todo esté cargado
     
     // Cambiar a modo actualización
@@ -397,7 +390,6 @@ function cargarDatosExistentes() {
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.removeAttribute('required');
-        console.log('Campo foto marcado como opcional para actualización');
     }
     
     // Actualizar el texto del área de subida de archivo
@@ -444,7 +436,6 @@ function limpiarFormulario() {
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.setAttribute('required', '');
-        console.log('Campo foto marcado como obligatorio para nuevo registro');
     }
     
     const fileUploadText = document.querySelector('.file-upload-btn p');
@@ -580,7 +571,6 @@ document.getElementById('registroForm').addEventListener('submit', async functio
         isValid = false;
     } else if (isUpdateMode && fotoInput.files[0]) {
         // Mostrar mensaje informativo si está actualizando la foto
-        console.log('Actualizando foto en modo edición');
     }
     
     if (!isValid) return;
@@ -622,7 +612,6 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             isUpdate: isUpdateMode // Flag para indicar si es actualización
         };
 
-        console.log('Datos a enviar:', formData); // Para depuración
         
         // 3. Enviar datos
         const resultado = await enviarFormulario(formData);
@@ -756,38 +745,20 @@ function detectChanges() {
     const currentData = getCurrentFormData();
     const changes = [];
     
-    console.log('=== DETECCIÓN DE CAMBIOS ===');
-    console.log('Datos originales:', originalFormData);
-    console.log('Datos actuales:', currentData);
-    
     for (const field in originalFormData) {
         const originalValue = normalizeValue(originalFormData[field]);
         const currentValue = normalizeValue(currentData[field]);
         
-        console.log(`Campo ${field}:`);
-        console.log(`  Original: "${originalValue}" (${typeof originalFormData[field]})`);
-        console.log(`  Actual: "${currentValue}" (${typeof currentData[field]})`);
-        console.log(`  ¿Son diferentes? ${originalValue !== currentValue}`);
-        
         // Solo agregar si realmente son diferentes
         if (originalValue !== currentValue) {
-            console.log(`✅ CAMBIO CONFIRMADO en ${field}`);
             changes.push({
                 field: field,
                 label: fieldLabels[field] || field,
                 oldValue: originalValue,
                 newValue: currentValue
             });
-        } else {
-            console.log(`❌ Sin cambio en ${field}`);
         }
     }
-    
-    console.log('=== RESUMEN DE CAMBIOS ===');
-    console.log('Total de cambios detectados:', changes.length);
-    changes.forEach((change, index) => {
-        console.log(`${index + 1}. ${change.label}: "${change.oldValue}" → "${change.newValue}"`);
-    });
     
     return changes;
 }
@@ -870,17 +841,23 @@ function showConfirmationModal() {
 // Variables para la pantalla de verificación
 let currentUserData = null;
 
+// Función para convertir URL de Google Drive a formato preview
+function convertToPreviewUrl(url) {
+    if (url.includes('drive.google.com/file/d/')) {
+        const fileId = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+        if (fileId) {
+            return `https://drive.google.com/file/d/${fileId[1]}/preview`;
+        }
+    }
+    return url;
+}
+
 // Función para verificar DNI en pantalla inicial
 function verificarDNIInicial(dni) {
     return new Promise((resolve) => {
         const statusElement = document.getElementById('verification-status');
         
-        // LOG 1: Inicio de verificación
-        console.log('🔍 INICIANDO verificarDNIInicial con DNI:', dni);
-        console.log('🔗 SCRIPT_URL configurada:', SCRIPT_URL);
-        
         if (dni.length !== 8) {
-            console.log('❌ DNI inválido - longitud:', dni.length);
             statusElement.innerHTML = '<div style="color: #e74c3c;">El DNI debe tener 8 dígitos</div>';
             resolve(null);
             return;
@@ -890,12 +867,9 @@ function verificarDNIInicial(dni) {
         
         // Crear callback único
         const callbackName = 'verifyCallback' + Date.now();
-        console.log('📞 Callback creado:', callbackName);
         
         // Definir callback global
         window[callbackName] = function(result) {
-            console.log('✅ Respuesta recibida del servidor:', result);
-            
             // Limpiar
             document.head.removeChild(script);
             delete window[callbackName];
@@ -906,32 +880,20 @@ function verificarDNIInicial(dni) {
         
         // Crear script tag para JSONP
         const script = document.createElement('script');
-        const requestUrl = `${SCRIPT_URL}?dni=${dni}&callback=${callbackName}`;
-        
-        console.log('🌐 URL de petición JSONP:', requestUrl);
-        
-        script.src = requestUrl;
-        script.onerror = function(error) {
-            console.error('❌ Error en script JSONP:', error);
-            console.error('❌ URL que falló:', requestUrl);
-            statusElement.innerHTML = '<div style="color: #e74c3c;">Error al verificar DNI - Ver consola</div>';
+        script.src = `${SCRIPT_URL}?dni=${dni}&callback=${callbackName}`;
+        script.onerror = function() {
+            statusElement.innerHTML = '<div style="color: #e74c3c;">Error al verificar DNI</div>';
             document.head.removeChild(script);
             delete window[callbackName];
             resolve(null);
         };
         
-        script.onload = function() {
-            console.log('📜 Script JSONP cargado correctamente');
-        };
-        
-        console.log('📤 Enviando petición JSONP...');
         document.head.appendChild(script);
         
         // Timeout de seguridad
         setTimeout(() => {
             if (window[callbackName]) {
-                console.warn('⏰ TIMEOUT - No se recibió respuesta en 10 segundos');
-                statusElement.innerHTML = '<div style="color: #e74c3c;">Timeout - Ver consola para detalles</div>';
+                statusElement.innerHTML = '<div style="color: #e74c3c;">Timeout - No se recibió respuesta</div>';
                 if (document.head.contains(script)) {
                     document.head.removeChild(script);
                 }
@@ -963,69 +925,66 @@ function mostrarUsuarioExistente(userData) {
     
     // Mostrar foto si existe
     if (userData.fotoUrl && userData.fotoUrl.trim() !== '') {
-        // Para Google Drive, mostrar un botón elegante en lugar de intentar cargar la imagen
+        // Para Google Drive, crear previsualización mejorada
         if (userData.fotoUrl.includes('drive.google.com')) {
             userPhoto.style.display = 'none';
             
-            // Crear botón elegante para ver foto
-            const photoButton = document.createElement('div');
-            photoButton.className = 'photo-button';
-            photoButton.innerHTML = `
-                <div class="photo-icon">📷</div>
-                <div class="photo-text">
-                    <strong>Foto Registrada</strong><br>
-                    <small>Click para visualizar</small>
+            // Crear contenedor de previsualización
+            const photoContainer = document.createElement('div');
+            photoContainer.className = 'photo-button';
+            photoContainer.innerHTML = `
+                <div class="photo-preview-container">
+                    <div class="photo-iframe-wrapper">
+                        <iframe class="photo-iframe" 
+                                src="${convertToPreviewUrl(userData.fotoUrl)}"
+                                allow="encrypted-media"
+                                sandbox="allow-scripts allow-same-origin">
+                        </iframe>
+                    </div>
+                    <div class="photo-fallback" style="display: none;">
+                        <div class="photo-icon">📷</div>
+                        <div class="photo-text">
+                            <strong>Foto Registrada</strong><br>
+                            <small>Click para abrir</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="photo-actions">
+                    <button type="button" class="btn-view-photo" onclick="window.open('${userData.fotoUrl}', '_blank')">
+                        👁️ Ver Foto Original
+                    </button>
                 </div>
             `;
-            photoButton.style.cssText = `
-                width: 150px; 
-                height: 150px; 
-                border: 2px solid #007bff; 
-                display: flex; 
-                flex-direction: column;
-                align-items: center; 
-                justify-content: center; 
-                color: #007bff; 
-                border-radius: 8px;
-                background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
-                text-align: center;
-                cursor: pointer;
-                font-size: 12px;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 4px rgba(0,123,255,0.1);
-                margin: 15px auto;
-            `;
             
-            // Efectos hover
-            photoButton.onmouseover = function() {
-                this.style.transform = 'scale(1.05)';
-                this.style.boxShadow = '0 4px 8px rgba(0,123,255,0.2)';
-                this.style.borderColor = '#0056b3';
+            // Detectar si el iframe funciona (fallback para Edge)
+            const iframe = photoContainer.querySelector('.photo-iframe');
+            const fallback = photoContainer.querySelector('.photo-fallback');
+            
+            iframe.onload = function() {
+                // Si carga correctamente, mostrar iframe
+                this.style.display = 'block';
+                fallback.style.display = 'none';
             };
             
-            photoButton.onmouseout = function() {
-                this.style.transform = 'scale(1)';
-                this.style.boxShadow = '0 2px 4px rgba(0,123,255,0.1)';
-                this.style.borderColor = '#007bff';
+            iframe.onerror = function() {
+                // Si falla (Edge), mostrar fallback
+                this.style.display = 'none';
+                fallback.style.display = 'flex';
             };
             
-            photoButton.onclick = function() {
-                window.open(userData.fotoUrl, '_blank');
-            };
+            // Timeout para detectar si no carga en Edge
+            setTimeout(() => {
+                if (iframe.style.display !== 'block') {
+                    iframe.style.display = 'none';
+                    fallback.style.display = 'flex';
+                }
+            }, 3000);
             
-            // Agregar estilos específicos para los elementos internos
-            const icon = photoButton.querySelector('.photo-icon');
-            icon.style.cssText = 'font-size: 40px; margin-bottom: 5px;';
-            
-            const text = photoButton.querySelector('.photo-text');
-            text.style.cssText = 'line-height: 1.2;';
-            
-            document.querySelector('.user-photo').appendChild(photoButton);
+            document.querySelector('.user-photo').appendChild(photoContainer);
             
         } else {
             // Para otras URLs, intentar mostrar la imagen normalmente
             userPhoto.onload = function() {
-                console.log('Foto cargada correctamente:', userData.fotoUrl);
                 this.style.display = 'block';
             };
             
@@ -1112,29 +1071,20 @@ document.getElementById('dni-verificacion').addEventListener('keypress', functio
 
 // Botón verificar DNI
 document.getElementById('btn-verificar-dni').addEventListener('click', async function() {
-    console.log('🚀 CLIC EN BOTÓN VERIFICAR - Iniciando proceso');
-    
     const dni = document.getElementById('dni-verificacion').value;
-    console.log('📝 DNI ingresado:', dni);
     
     if (dni.length !== 8) {
-        console.log('❌ DNI inválido - longitud incorrecta');
         document.getElementById('verification-status').innerHTML = '<div style="color: #e74c3c;">Por favor ingrese 8 dígitos</div>';
         return;
     }
     
-    console.log('✅ DNI válido - procediendo con verificación');
     const result = await verificarDNIInicial(dni);
-    console.log('📄 Resultado de verificarDNIInicial:', result);
     
     if (result && !result.success && result.error === 'DNI_ALREADY_EXISTS') {
-        console.log('👤 DNI existe - mostrando usuario existente');
         mostrarUsuarioExistente(result.existingData);
     } else if (result && result.success) {
-        console.log('🆕 DNI nuevo - mostrando opción de registro');
         mostrarUsuarioNuevo();
     } else {
-        console.log('⚠️ Resultado inesperado o error');
         document.getElementById('verification-status').innerHTML = '<div style="color: #e74c3c;">Error al verificar DNI</div>';
     }
 });
@@ -1262,7 +1212,6 @@ document.getElementById('btn-volver-verificacion').addEventListener('click', fun
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.setAttribute('required', '');
-        console.log('Campo foto marcado como obligatorio para nuevo registro');
     }
     
     const fileUploadText = document.querySelector('.file-upload-btn p');
