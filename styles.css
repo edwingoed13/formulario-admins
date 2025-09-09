@@ -780,6 +780,27 @@ button:hover {
     padding: 15px;
     margin-bottom: 20px;
     border-left: 4px solid #ff6b35;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Estilos del scrollbar para el contenedor de cambios */
+.changes-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.changes-container::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 4px;
+}
+
+.changes-container::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 4px;
+}
+
+.changes-container::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
 }
 
 .change-item {
