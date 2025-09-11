@@ -140,6 +140,208 @@ function previewImage(input) {
     }
 }
 
+// Mostrar vista previa de imagen existente desde URL
+function mostrarImagenExistente(imageUrl) {
+    if (!imageUrl) return;
+    
+    const fileUploadArea = document.querySelector('.file-upload');
+    
+    // Crear contenedor para la imagen existente
+    const existingImageContainer = document.createElement('div');
+    existingImageContainer.id = 'existing-image-container';
+    existingImageContainer.className = 'existing-image-preview';
+    
+    // Verificar si es Google Drive o URL normal
+    if (imageUrl.includes('drive.google.com')) {
+        // Usar el sistema de iframe para Google Drive
+        existingImageContainer.innerHTML = `
+            <div class="existing-image-header">
+                <strong>📷 Foto actual registrada</strong>
+                <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">✕</button>
+            </div>
+            <div class="photo-preview-container">
+                <div class="photo-iframe-wrapper" style="width: 250px; height: 250px; margin: 0 auto;">
+                    <iframe class="photo-iframe" 
+                            src="${convertToPreviewUrl(imageUrl)}"
+                            style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+                            allow="encrypted-media"
+                            sandbox="allow-scripts allow-same-origin">
+                    </iframe>
+                </div>
+                <div class="photo-fallback" style="display: none; width: 250px; height: 250px; margin: 0 auto;">
+                    <div class="photo-icon">📷</div>
+                    <div class="photo-text">
+                        <strong>Foto Registrada</strong><br>
+                        <small>Click para ver original</small>
+                    </div>
+                </div>
+            </div>
+            <div class="photo-actions" style="text-align: center; margin-top: 10px;">
+                <button type="button" class="btn-view-photo" onclick="window.open('${imageUrl}', '_blank')" 
+                        style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    👁️ Ver Foto Original
+                </button>
+            </div>
+            <p class="update-note"><small>💡 Puede subir una nueva imagen para reemplazar la actual</small></p>
+        `;
+        
+        // Después de insertar, configurar el iframe
+        setTimeout(() => {
+            const iframe = existingImageContainer.querySelector('.photo-iframe');
+            const fallback = existingImageContainer.querySelector('.photo-fallback');
+            
+            if (iframe && fallback) {
+                iframe.onload = function() {
+                    this.style.display = 'block';
+                    fallback.style.display = 'none';
+                };
+                
+                iframe.onerror = function() {
+                    this.style.display = 'none';
+                    fallback.style.display = 'flex';
+                    fallback.style.alignItems = 'center';
+                    fallback.style.justifyContent = 'center';
+                    fallback.style.flexDirection = 'column';
+                    fallback.style.border = '2px dashed #ddd';
+                    fallback.style.borderRadius = '8px';
+                    fallback.style.background = '#f8f9fa';
+                    fallback.style.cursor = 'pointer';
+                    fallback.onclick = () => window.open(imageUrl, '_blank');
+                };
+                
+                // Timeout para detectar si no carga
+                setTimeout(() => {
+                    if (iframe.style.display !== 'block') {
+                        iframe.style.display = 'none';
+                        fallback.style.display = 'flex';
+                        fallback.style.alignItems = 'center';
+                        fallback.style.justifyContent = 'center';
+                        fallback.style.flexDirection = 'column';
+                        fallback.style.border = '2px dashed #ddd';
+                        fallback.style.borderRadius = '8px';
+                        fallback.style.background = '#f8f9fa';
+                        fallback.style.cursor = 'pointer';
+                        fallback.onclick = () => window.open(imageUrl, '_blank');
+                    }
+                }, 3000);
+            }
+        }, 100);
+        
+    } else {
+        // Para URLs normales, usar imagen directa
+        existingImageContainer.innerHTML = `
+            <div class="existing-image-header">
+                <strong>📷 Foto actual registrada</strong>
+                <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">✕</button>
+            </div>
+            <div class="image-container" style="text-align: center;">
+                <img src="${imageUrl}" alt="Foto existente" class="existing-image" 
+                     style="max-width: 250px; max-height: 250px; border-radius: 8px; display: none; margin: 10px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div class="image-placeholder" style="display: none; width: 250px; height: 250px; margin: 10px auto; border: 2px dashed #ddd; border-radius: 8px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer;">
+                    <div style="font-size: 48px;">📷</div>
+                    <div><strong>Foto no disponible</strong><br><small>Click para ver enlace</small></div>
+                </div>
+            </div>
+            <div class="photo-actions" style="text-align: center; margin-top: 10px;">
+                <button type="button" class="btn-view-photo" onclick="window.open('${imageUrl}', '_blank')"
+                        style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    👁️ Ver Foto Original
+                </button>
+            </div>
+            <p class="update-note"><small>💡 Puede subir una nueva imagen para reemplazar la actual</small></p>
+        `;
+        
+        // Configurar la imagen después de insertar
+        setTimeout(() => {
+            const img = existingImageContainer.querySelector('.existing-image');
+            const placeholder = existingImageContainer.querySelector('.image-placeholder');
+            
+            if (img && placeholder) {
+                img.onload = function() {
+                    this.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                    placeholder.onclick = () => window.open(imageUrl, '_blank');
+                };
+            }
+        }, 100);
+    }
+    
+    // Agregar estilos
+    if (!document.getElementById('existing-image-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'existing-image-styles';
+        styles.textContent = `
+            .existing-image-preview {
+                border: 2px solid #007bff;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 15px;
+                background: #f8f9ff;
+            }
+            .existing-image-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                color: #007bff;
+                font-weight: bold;
+            }
+            .btn-remove-preview {
+                background: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 25px;
+                height: 25px;
+                cursor: pointer;
+                font-size: 12px;
+                transition: background 0.3s;
+            }
+            .btn-remove-preview:hover {
+                background: #c82333;
+            }
+            .photo-iframe-wrapper {
+                position: relative;
+                overflow: hidden;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .update-note {
+                text-align: center;
+                margin: 10px 0 0 0;
+                color: #6c757d;
+                font-style: italic;
+            }
+            .btn-view-photo:hover {
+                background: #0056b3 !important;
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    // Remover contenedor existente si ya existe
+    const existingContainer = document.getElementById('existing-image-container');
+    if (existingContainer) {
+        existingContainer.remove();
+    }
+    
+    // Insertar antes del área de subida de archivos
+    fileUploadArea.parentNode.insertBefore(existingImageContainer, fileUploadArea);
+}
+
+// Ocultar vista previa de imagen existente
+function ocultarImagenExistente() {
+    const container = document.getElementById('existing-image-container');
+    if (container) {
+        container.remove();
+    }
+}
+
 // Convertir imagen a Base64
 async function procesarImagen(file) {
     return new Promise((resolve, reject) => {
@@ -404,6 +606,11 @@ function cargarDatosExistentes() {
         fileUploadSmall.innerHTML = 'Opcional: JPG, PNG (Máx. 2MB)<br><em>Si no seleccionas nada, se mantendrá tu foto actual</em>';
     }
     
+    // Mostrar vista previa de la foto existente si existe
+    if (data.fotoUrl && data.fotoUrl.trim() !== '') {
+        mostrarImagenExistente(data.fotoUrl);
+    }
+    
     mostrarMensaje('exito', 'Datos cargados correctamente. Puede modificar los campos y actualizar.');
 }
 
@@ -415,6 +622,7 @@ function limpiarFormulario() {
     document.getElementById('dni-status').textContent = '';
     document.getElementById('dni-status').className = 'dni-status';
     document.getElementById('dni-error').textContent = '';
+    ocultarImagenExistente(); // Remover vista previa de imagen existente
     
     // Resetear variables
     isUpdateMode = false;
@@ -625,6 +833,7 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             document.getElementById('preview').style.display = 'none';
             document.getElementById('ruc-info').style.display = 'none';
             document.getElementById('dni-status').textContent = '';
+            ocultarImagenExistente(); // Remover vista previa de imagen existente
             
             // Si estaba en modo actualización, volver a pantalla de verificación
             const wasUpdateMode = isUpdateMode;
