@@ -113,6 +113,58 @@ style.textContent = `
         from { opacity: 1; transform: translateY(0); }
         to { opacity: 0; transform: translateY(20px); }
     }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    @keyframes dots {
+        0%, 20% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+    .validando-text {
+        display: inline-block;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    .dots {
+        display: inline-block;
+        animation: dots 1.5s steps(3, end) infinite;
+    }
+    .dni-status.validando {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        border: 1px solid #bbdefb;
+        font-weight: 500;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    .dni-status.disponible {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #a5d6a7;
+        font-weight: 600;
+        animation: fadeIn 0.5s ease;
+    }
+    .dni-status.duplicado {
+        background-color: #fff3e0;
+        color: #f57c00;
+        border: 1px solid #ffcc02;
+        font-weight: 600;
+        animation: fadeIn 0.5s ease;
+    }
+    .dni-status.error {
+        background-color: #ffebee;
+        color: #d32f2f;
+        border: 1px solid #ffcdd2;
+        font-weight: 500;
+        animation: fadeIn 0.5s ease;
+    }
+    .dni-status.actualizando {
+        background-color: #f3e5f5;
+        color: #7b1fa2;
+        border: 1px solid #ce93d8;
+        font-weight: 500;
+        animation: fadeIn 0.5s ease;
+    }
 `;
 document.head.appendChild(style);
 
@@ -160,7 +212,7 @@ function mostrarImagenExistente(imageUrl) {
                 <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">×</button>
             </div>
             <div class="photo-preview-container">
-                <div class="photo-iframe-wrapper" style="width: 250px; height: 250px; margin: 0 auto;">
+                <div class="photo-iframe-wrapper">
                     <iframe class="photo-iframe" 
                             src="${convertToPreviewUrl(imageUrl)}"
                             style="width: 100%; height: 100%; border: none; border-radius: 8px;"
@@ -168,7 +220,7 @@ function mostrarImagenExistente(imageUrl) {
                             sandbox="allow-scripts allow-same-origin">
                     </iframe>
                 </div>
-                <div class="photo-fallback" style="display: none; width: 250px; height: 250px; margin: 0 auto;">
+                <div class="photo-fallback" style="display: none;">
                     <div class="photo-icon">📷</div>
                     <div class="photo-text">
                         <strong>Foto Registrada</strong><br>
@@ -199,13 +251,6 @@ function mostrarImagenExistente(imageUrl) {
                 iframe.onerror = function() {
                     this.style.display = 'none';
                     fallback.style.display = 'flex';
-                    fallback.style.alignItems = 'center';
-                    fallback.style.justifyContent = 'center';
-                    fallback.style.flexDirection = 'column';
-                    fallback.style.border = '2px dashed #ddd';
-                    fallback.style.borderRadius = '8px';
-                    fallback.style.background = '#f8f9fa';
-                    fallback.style.cursor = 'pointer';
                     fallback.onclick = () => window.open(imageUrl, '_blank');
                 };
                 
@@ -214,13 +259,6 @@ function mostrarImagenExistente(imageUrl) {
                     if (iframe.style.display !== 'block') {
                         iframe.style.display = 'none';
                         fallback.style.display = 'flex';
-                        fallback.style.alignItems = 'center';
-                        fallback.style.justifyContent = 'center';
-                        fallback.style.flexDirection = 'column';
-                        fallback.style.border = '2px dashed #ddd';
-                        fallback.style.borderRadius = '8px';
-                        fallback.style.background = '#f8f9fa';
-                        fallback.style.cursor = 'pointer';
                         fallback.onclick = () => window.open(imageUrl, '_blank');
                     }
                 }, 3000);
@@ -310,11 +348,37 @@ function mostrarImagenExistente(imageUrl) {
             .btn-remove-preview:hover {
                 background: #c82333;
             }
+            .photo-preview-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 15px 0;
+            }
             .photo-iframe-wrapper {
                 position: relative;
                 overflow: hidden;
                 border-radius: 8px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                width: 200px;
+                height: 200px;
+                max-width: 100%;
+            }
+            .photo-fallback {
+                width: 200px;
+                height: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                border: 2px dashed #ddd;
+                border-radius: 8px;
+                background: #f8f9fa;
+                cursor: pointer;
+                color: #6c757d;
+            }
+            .photo-icon {
+                font-size: 48px;
+                margin-bottom: 10px;
             }
             .update-note {
                 text-align: center;
@@ -401,7 +465,7 @@ function validarDNI(dni) {
             return;
         }
         
-        statusElement.textContent = 'Validando DNI...';
+        statusElement.innerHTML = '🔍 <span class="validando-text">Verificando DNI</span><span class="dots">...</span>';
         statusElement.className = 'dni-status validando';
         
         // Crear callback único
@@ -1303,7 +1367,7 @@ function verificarDNIInicial(dni) {
             return;
         }
         
-        statusElement.innerHTML = '<div style="color: #3498db;">🔍 Verificando DNI...</div>';
+        statusElement.innerHTML = '<div style="color: #3498db;">🔍 <span class="validando-text">Verificando DNI</span><span class="dots">...</span></div>';
         
         // Crear callback único
         const callbackName = 'verifyCallback' + Date.now();
