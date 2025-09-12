@@ -396,7 +396,7 @@ button:hover {
     .imagenes-guia {
         justify-content: space-between;
     }
-
+    
     .imagen-guia {
         width: calc(50% - 10px);
     }
@@ -445,12 +445,12 @@ button:hover {
     .container {
         padding: 20px;
     }
-
+    
     .radio-group {
         flex-direction: column;
         gap: 10px;
     }
-
+    
     fieldset {
         padding: 15px;
     }
@@ -460,12 +460,12 @@ button:hover {
     body {
         padding: 10px;
     }
-
+    
     .container {
         margin: 10px auto;
         padding: 15px;
     }
-
+    
     h1 {
         font-size: 1.5em;
     }
@@ -474,7 +474,7 @@ button:hover {
     .datos-laborales-container {
         grid-template-columns: 1fr 1fr;
     }
-
+    
     .checkbox-group-container {
         grid-template-columns: 1fr 1fr;
     }
@@ -484,12 +484,12 @@ button:hover {
     .datos-laborales-group {
         padding: 15px;
     }
-
+    
     .checkbox-group {
         flex-direction: column;
         gap: 10px;
     }
-
+    
     .checkbox-option {
         width: 100%;
     }
@@ -698,25 +698,25 @@ button:hover {
         min-height: 70px;
         letter-spacing: 2px;
     }
-
+    
     .btn-verificar {
         padding: 15px 25px;
         font-size: 16px;
         min-height: 50px;
     }
-
+    
     .verification-buttons {
         flex-direction: column;
     }
-
+    
     .btn-primary, .btn-secondary {
         width: 100%;
     }
-
+    
     .verification-card {
         padding: 20px;
     }
-
+    
     .user-photo img {
         max-width: 120px;
         max-height: 120px;
@@ -971,20 +971,20 @@ button:hover {
         width: 95%;
         margin: 10px;
     }
-
+    
     .modal-body {
         padding: 20px;
     }
-
+    
     .modal-footer {
         flex-direction: column;
         gap: 10px;
     }
-
+    
     .btn-cancel, .btn-confirm {
         width: 100%;
     }
-
+    
     .photo-preview-container {
         width: 150px;
         height: 150px;
@@ -995,7 +995,7 @@ button:hover {
         align-items: flex-start;
         gap: 5px;
     }
-
+    
     .change-values {
         text-align: left;
     }
