@@ -891,35 +891,21 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
     // Agregar modal al DOM
     document.body.appendChild(modal);
     
-    // Configurar botón de confirmación - prevenir múltiples clicks
+    // Configurar botón de confirmación
     const btnConfirmar = document.getElementById('btn-confirmar-tallas');
-    let isProcessing = false; // Variable para controlar el procesamiento
     
-    btnConfirmar.onclick = function(e) {
+    btnConfirmar.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         
-        // Prevenir múltiples clicks
-        if (isProcessing) return;
-        isProcessing = true;
+        // Eliminar modal del DOM inmediatamente
+        modal.remove();
         
-        // Cerrar modal inmediatamente usando setTimeout para asegurar que se cierre
-        setTimeout(() => {
-            const modalToClose = document.querySelector('.modal-overlay');
-            if (modalToClose) {
-                modalToClose.remove();
-            }
-            
-            // Ejecutar callback después de cerrar el modal
-            if (callback) {
-                callback();
-            }
-            
-            // Resetear estado
-            setTimeout(() => {
-                isProcessing = false;
-            }, 500);
-        }, 100);
-    };
+        // Ejecutar callback
+        if (callback) {
+            callback();
+        }
+    });
 }
 
 // Función para cerrar el modal de tallas
