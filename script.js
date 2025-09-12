@@ -74,7 +74,7 @@ function mostrarMensaje(tipo, mensaje) {
     mensajeDiv.id = 'mensaje-flotante';
     mensajeDiv.className = `mensaje-${tipo}`;
     mensajeDiv.textContent = mensaje;
-
+    
     mensajeDiv.style.position = 'fixed';
     mensajeDiv.style.bottom = '20px';
     mensajeDiv.style.right = '20px';
@@ -85,15 +85,15 @@ function mostrarMensaje(tipo, mensaje) {
     mensajeDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
     mensajeDiv.style.zIndex = '1000';
     mensajeDiv.style.animation = 'fadeIn 0.5s';
-
+    
     if (tipo === 'exito') {
         mensajeDiv.style.backgroundColor = '#4CAF50';
     } else {
         mensajeDiv.style.backgroundColor = '#F44336';
     }
-
+    
     document.body.appendChild(mensajeDiv);
-
+    
     setTimeout(() => {
         mensajeDiv.style.animation = 'fadeOut 0.5s';
         setTimeout(() => {
@@ -120,7 +120,7 @@ document.head.appendChild(style);
 function previewImage(input) {
     const preview = document.getElementById('preview');
     const file = input.files[0];
-
+    
     if (file) {
         if (file.size > 2 * 1024 * 1024) {
             mostrarMensaje('error', 'La imagen es demasiado grande (máximo 2MB)');
@@ -128,7 +128,7 @@ function previewImage(input) {
             preview.style.display = 'none';
             return;
         }
-
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             preview.src = e.target.result;
@@ -143,14 +143,14 @@ function previewImage(input) {
 // Mostrar vista previa de imagen existente desde URL
 function mostrarImagenExistente(imageUrl) {
     if (!imageUrl) return;
-
+    
     const fileUploadArea = document.querySelector('.file-upload');
-
+    
     // Crear contenedor para la imagen existente
     const existingImageContainer = document.createElement('div');
     existingImageContainer.id = 'existing-image-container';
     existingImageContainer.className = 'existing-image-preview';
-
+    
     // Verificar si es Google Drive o URL normal
     if (imageUrl.includes('drive.google.com')) {
         // Usar el sistema de iframe para Google Drive
@@ -184,18 +184,18 @@ function mostrarImagenExistente(imageUrl) {
             </div>
             <p class="update-note"><small>💡 Puede subir una nueva imagen para reemplazar la actual</small></p>
         `;
-
+        
         // Después de insertar, configurar el iframe
         setTimeout(() => {
             const iframe = existingImageContainer.querySelector('.photo-iframe');
             const fallback = existingImageContainer.querySelector('.photo-fallback');
-
+            
             if (iframe && fallback) {
                 iframe.onload = function() {
                     this.style.display = 'block';
                     fallback.style.display = 'none';
                 };
-
+                
                 iframe.onerror = function() {
                     this.style.display = 'none';
                     fallback.style.display = 'flex';
@@ -208,7 +208,7 @@ function mostrarImagenExistente(imageUrl) {
                     fallback.style.cursor = 'pointer';
                     fallback.onclick = () => window.open(imageUrl, '_blank');
                 };
-
+                
                 // Timeout para detectar si no carga
                 setTimeout(() => {
                     if (iframe.style.display !== 'block') {
@@ -226,7 +226,7 @@ function mostrarImagenExistente(imageUrl) {
                 }, 3000);
             }
         }, 100);
-
+        
     } else {
         // Para URLs normales, usar imagen directa
         existingImageContainer.innerHTML = `
@@ -250,18 +250,18 @@ function mostrarImagenExistente(imageUrl) {
             </div>
             <p class="update-note"><small>💡 Puede subir una nueva imagen para reemplazar la actual</small></p>
         `;
-
+        
         // Configurar la imagen después de insertar
         setTimeout(() => {
             const img = existingImageContainer.querySelector('.existing-image');
             const placeholder = existingImageContainer.querySelector('.image-placeholder');
-
+            
             if (img && placeholder) {
                 img.onload = function() {
                     this.style.display = 'block';
                     placeholder.style.display = 'none';
                 };
-
+                
                 img.onerror = function() {
                     this.style.display = 'none';
                     placeholder.style.display = 'flex';
@@ -270,7 +270,7 @@ function mostrarImagenExistente(imageUrl) {
             }
         }, 100);
     }
-
+    
     // Agregar estilos
     if (!document.getElementById('existing-image-styles')) {
         const styles = document.createElement('style');
@@ -328,13 +328,13 @@ function mostrarImagenExistente(imageUrl) {
         `;
         document.head.appendChild(styles);
     }
-
+    
     // Remover contenedor existente si ya existe
     const existingContainer = document.getElementById('existing-image-container');
     if (existingContainer) {
         existingContainer.remove();
     }
-
+    
     // Insertar antes del área de subida de archivos
     fileUploadArea.parentNode.insertBefore(existingImageContainer, fileUploadArea);
 }
@@ -351,7 +351,7 @@ function ocultarImagenExistente() {
 async function procesarImagen(file) {
     return new Promise((resolve, reject) => {
         if (!file) resolve(null);
-
+        
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve({
@@ -370,11 +370,11 @@ function validarSoloNumeros(input) {
 // Validar longitud de campo
 function validarLongitud(input, longitud) {
     const errorElement = document.getElementById(`${input.id}-error`);
-
+    
     if (input.value.length > longitud) {
         input.value = input.value.slice(0, longitud);
     }
-
+    
     if (input.value.length !== longitud && input.value.length > 0) {
         errorElement.textContent = `Debe tener exactamente ${longitud} dígitos`;
     } else {
@@ -392,7 +392,7 @@ function validarDNI(dni) {
     return new Promise((resolve) => {
         const statusElement = document.getElementById('dni-status');
         const errorElement = document.getElementById('dni-error');
-
+        
         if (dni.length !== 8) {
             statusElement.textContent = '';
             isUpdateMode = false;
@@ -400,19 +400,19 @@ function validarDNI(dni) {
             resolve(true);
             return;
         }
-
+        
         statusElement.textContent = 'Validando DNI...';
         statusElement.className = 'dni-status validando';
-
+        
         // Crear callback único
         const callbackName = 'dniCallback' + Date.now();
-
+        
         // Definir callback global
         window[callbackName] = function(result) {
             // Limpiar
             document.head.removeChild(script);
             delete window[callbackName];
-
+            
             if (!result.success && result.error === 'DNI_ALREADY_EXISTS') {
                 statusElement.innerHTML = `
                     <div>✏️ ${result.message}</div>
@@ -427,7 +427,7 @@ function validarDNI(dni) {
                 `;
                 statusElement.className = 'dni-status duplicado';
                 errorElement.textContent = `Registrado como: ${result.existingData.nombres} ${result.existingData.apellidos}`;
-
+                
                 // Guardar datos existentes
                 existingUserData = result.existingData;
                 resolve(false);
@@ -445,7 +445,7 @@ function validarDNI(dni) {
                 resolve(true);
             }
         };
-
+        
         // Crear script tag para JSONP
         const script = document.createElement('script');
         script.src = `${SCRIPT_URL}?dni=${dni}&callback=${callbackName}`;
@@ -456,7 +456,7 @@ function validarDNI(dni) {
             delete window[callbackName];
             resolve(true);
         };
-
+        
         document.head.appendChild(script);
     });
 }
@@ -464,33 +464,33 @@ function validarDNI(dni) {
 // Cargar datos existentes en el formulario
 function cargarDatosExistentes() {
     if (!existingUserData) return;
-
+    
     const data = existingUserData;
-
+    
     // Llenar campos básicos
     document.getElementById('nombres').value = data.nombres || '';
     document.getElementById('apellido_paterno').value = data.apellido_paterno || '';
     document.getElementById('apellido_materno').value = data.apellido_materno || '';
-
+    
     // Seleccionar sexo
     const sexoRadio = document.querySelector(`input[name="sexo"][value="${data.sexo}"]`);
     if (sexoRadio) {
         sexoRadio.checked = true;
         actualizarTallas(); // Actualizar las opciones de tallas
     }
-
+    
     // Otros campos (arreglar formato de fecha)
     if (data.fecha_nacimiento) {
-
+        
         let fechaNacimiento = data.fecha_nacimiento;
-
+        
         if (fechaNacimiento instanceof Date) {
             // Si es objeto Date
             fechaNacimiento = fechaNacimiento.toISOString().split('T')[0];
         } else if (typeof fechaNacimiento === 'string') {
             // Limpiar la fecha
             fechaNacimiento = fechaNacimiento.trim();
-
+            
             if (fechaNacimiento.includes('/')) {
                 // Formato DD/MM/YYYY a YYYY-MM-DD
                 const partes = fechaNacimiento.split('/');
@@ -505,37 +505,37 @@ function cargarDatosExistentes() {
                 fechaNacimiento = fechaNacimiento.split('T')[0];
             }
         }
-
+        
         document.getElementById('fecha_nacimiento').value = fechaNacimiento;
     }
     document.getElementById('email').value = data.email || '';
     document.getElementById('celular').value = data.celular || '';
     document.getElementById('direccion').value = data.direccion || '';
     document.getElementById('ruc').value = data.ruc || '';
-
+    
     // Campos laborales
     document.getElementById('sede').value = data.sede || '';
     document.getElementById('turno').value = data.turno || '';
     document.getElementById('area').value = data.area || '';
     document.getElementById('cargo').value = data.cargo || '';
-
+    
     // Datos bancarios
     document.getElementById('banco').value = data.banco || '';
     document.getElementById('cci').value = data.cci || '';
-
+    
     // Padre de familia
     const padreRadio = document.querySelector(`input[name="padre_familia"][value="${data.padre_familia}"]`);
     if (padreRadio) padreRadio.checked = true;
-
+    
     // Actualizar variables de RUC si están disponibles
     if (data.ruc_activo) rucActivo = data.ruc_activo;
     if (data.ruc_habido) rucHabido = data.ruc_habido;
-
+    
     // Tallas (después de actualizar las opciones)
     setTimeout(() => {
         document.getElementById('talla_casaca').value = data.talla_casaca || '';
         document.getElementById('talla_pantalon').value = data.talla_pantalon || '';
-
+        
         // IMPORTANTE: Guardar datos originales DESPUÉS de que todo esté cargado
         let fechaParaComparar = data.fecha_nacimiento;
         if (fechaParaComparar instanceof Date) {
@@ -551,7 +551,7 @@ function cargarDatosExistentes() {
                 fechaParaComparar = fechaParaComparar.split('T')[0];
             }
         }
-
+        
         originalFormData = {
             nombres: data.nombres || '',
             apellido_paterno: data.apellido_paterno || '',
@@ -572,50 +572,50 @@ function cargarDatosExistentes() {
             talla_casaca: data.talla_casaca || '',
             talla_pantalon: data.talla_pantalon || ''
         };
-
+        
     }, 200); // Aumentar tiempo para asegurar que todo esté cargado
-
+    
     // Cambiar a modo actualización
     isUpdateMode = true;
-
+    
     // Actualizar el estado visual
     const statusElement = document.getElementById('dni-status');
     statusElement.innerHTML = '📝 Modo actualización - Puede modificar y enviar';
     statusElement.className = 'dni-status actualizando';
-
+    
     // Cambiar texto del botón
     const submitBtn = document.querySelector('button[type="submit"]');
     submitBtn.textContent = 'Actualizar Registro';
-
+    
     // Actualizar texto de la foto para que sea opcional
     const fotoLabel = document.querySelector('label[for="foto"]');
     if (fotoLabel) {
         fotoLabel.innerHTML = `Foto personal para credencial <span style="color: #28a745; font-size: 12px;">(Opcional - Solo si desea cambiar la foto actual)</span>`;
     }
-
+    
     // IMPORTANTE: Quitar el atributo required del campo foto
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.removeAttribute('required');
     }
-
+    
     // Actualizar el texto del área de subida de archivo
     const fileUploadText = document.querySelector('.file-upload-btn p');
     if (fileUploadText) {
         fileUploadText.textContent = 'Haz clic solo si deseas cambiar tu foto';
     }
-
+    
     // Actualizar el texto pequeño
     const fileUploadSmall = document.querySelector('.file-upload-btn small');
     if (fileUploadSmall) {
         fileUploadSmall.innerHTML = 'Opcional: JPG, PNG (Máx. 2MB)<br><em>Si no seleccionas nada, se mantendrá tu foto actual</em>';
     }
-
+    
     // Mostrar vista previa de la foto existente si existe
     if (data.fotoUrl && data.fotoUrl.trim() !== '') {
         mostrarImagenExistente(data.fotoUrl);
     }
-
+    
     mostrarMensaje('exito', 'Datos cargados para actualización. Puede modificar los campos necesarios.');
 }
 
@@ -628,39 +628,39 @@ function limpiarFormulario() {
     document.getElementById('dni-status').className = 'dni-status';
     document.getElementById('dni-error').textContent = '';
     ocultarImagenExistente(); // Remover vista previa de imagen existente
-
+    
     // Resetear variables
     isUpdateMode = false;
     existingUserData = null;
     rucActivo = 'No';
     rucHabido = 'No';
-
+    
     // Restaurar texto del botón
     const submitBtn = document.querySelector('button[type="submit"]');
     submitBtn.textContent = 'Enviar Formulario';
-
+    
     // Restaurar textos originales de la foto y required
     const fotoLabel = document.querySelector('label[for="foto"]');
     if (fotoLabel) {
         fotoLabel.innerHTML = 'Foto personal para credencial <span class="required"></span>';
     }
-
+    
     // IMPORTANTE: Restaurar el atributo required del campo foto
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.setAttribute('required', '');
     }
-
+    
     const fileUploadText = document.querySelector('.file-upload-btn p');
     if (fileUploadText) {
         fileUploadText.textContent = 'Haz clic para subir tu foto';
     }
-
+    
     const fileUploadSmall = document.querySelector('.file-upload-btn small');
     if (fileUploadSmall) {
         fileUploadSmall.innerHTML = 'Formatos aceptados: JPG, PNG (Máx. 2MB)';
     }
-
+    
     mostrarMensaje('exito', 'Formulario limpiado. Puede crear un nuevo registro.');
 }
 
@@ -671,19 +671,19 @@ async function consultarRUC(ruc) {
     const infoElement = document.getElementById('ruc-info');
     const activoElement = document.getElementById('ruc-activo');
     const habidoElement = document.getElementById('ruc-habido');
-
+    
     loadingElement.style.display = 'block';
     errorElement.textContent = '';
     infoElement.style.display = 'none';
-
+    
     try {
         const response = await fetch(`https://dniruc.apisperu.com/api/v1/ruc/${ruc}?token=${API_TOKEN}`);
         const data = await response.json();
-
+        
         if (data.razonSocial) {
             rucActivo = data.estado === 'ACTIVO' ? 'Si' : 'No';
             rucHabido = data.condicion === 'HABIDO' ? 'Si' : 'No';
-
+            
             infoElement.style.display = 'block';
             activoElement.innerHTML = `<strong>Activo:</strong> ${rucActivo}`;
             habidoElement.innerHTML = `<strong>Habido:</strong> ${rucHabido}`;
@@ -709,7 +709,7 @@ async function enviarFormulario(formData) {
             },
             body: JSON.stringify(formData)
         });
-
+        
         // Con no-cors, asumimos que fue exitoso si no hubo error
         return { success: true };
     } catch (error) {
@@ -724,11 +724,11 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
     const esActualizacion = isUpdateMode;
     const titulo = esActualizacion ? 'Confirmar Actualización de Tallas' : 'Confirmar Tallas Seleccionadas';
     const textoBoton = esActualizacion ? 'Confirmar y Actualizar' : 'Confirmar y Enviar';
-
+    
     // Determinar el sexo para mostrar DAMAS o VARONES
     const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
     const tipoTalla = sexo === 'F' ? 'DAMAS' : 'VARONES';
-
+    
     // Crear modal
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -758,7 +758,7 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
             </div>
         </div>
     `;
-
+    
     // Agregar estilos del modal si no existen
     if (!document.getElementById('modal-styles')) {
         const modalStyles = document.createElement('style');
@@ -887,22 +887,19 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
         `;
         document.head.appendChild(modalStyles);
     }
-
+    
     // Agregar modal al DOM
     document.body.appendChild(modal);
-
-    // Configurar botón de confirmación - prevenir múltiples clicks
+    
     // Configurar botón de confirmación
     const btnConfirmar = document.getElementById('btn-confirmar-tallas');
-    let isProcessing = false; // Variable para controlar el procesamiento
-
+    
     btnConfirmar.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-
+        
         // Eliminar modal del DOM inmediatamente
         modal.remove();
-
         
         // Ejecutar callback
         if (callback) {
@@ -922,20 +919,20 @@ function cerrarModalTallas() {
 // Manejador de envío del formulario
 document.getElementById('registroForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
+    
     // 1. Mostrar confirmación si es modo actualización
     if (isUpdateMode) {
         const confirmacion = await showConfirmationModal();
-
+        
         if (!confirmacion) {
             mostrarMensaje('info', 'Actualización cancelada. Puede revisar los datos antes de enviar.');
             return;
         }
     }
-
+    
     // 2. Validaciones
     let isValid = true;
-
+    
     // Validar DNI (8 dígitos)
     const dni = document.getElementById('dni');
     if (dni.value.length !== 8) {
@@ -949,35 +946,35 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             isValid = false;
         }
     }
-
+    
     // Validar celular (9 dígitos)
     const celular = document.getElementById('celular');
     if (celular.value.length !== 9) {
         document.getElementById('celular-error').textContent = 'El celular debe tener 9 dígitos';
         isValid = false;
     }
-
+    
     // Validar RUC (11 dígitos)
     const ruc = document.getElementById('ruc');
     if (ruc.value.length !== 11) {
         document.getElementById('ruc-error').textContent = 'El RUC debe tener 11 dígitos';
         isValid = false;
     }
-
+    
     // Validar CCI (20 dígitos)
     const cci = document.getElementById('cci');
     if (cci.value.length !== 20) {
         document.getElementById('cci-error').textContent = 'El CCI debe tener 20 dígitos';
         isValid = false;
     }
-
+    
     // Validar cargo (obligatorio)
     const cargo = document.getElementById('cargo').value;
     if (!cargo || cargo.trim() === '') {
         mostrarMensaje('error', 'Por favor, ingrese su cargo');
         isValid = false;
     }
-
+    
     // Validar foto (obligatorio solo para nuevo registro)
     const fotoInput = document.getElementById('foto');
     if (!isUpdateMode && !fotoInput.files[0]) {
@@ -986,19 +983,19 @@ document.getElementById('registroForm').addEventListener('submit', async functio
     } else if (isUpdateMode && fotoInput.files[0]) {
         // Mostrar mensaje informativo si está actualizando la foto
     }
-
+    
     if (!isValid) return;
-
+    
     // Obtener tallas seleccionadas
     const tallaCasaca = document.getElementById('talla_casaca').value;
     const tallaPantalon = document.getElementById('talla_pantalon').value;
-
+    
     // Validar que las tallas estén seleccionadas
     if (!tallaCasaca || !tallaPantalon) {
         mostrarMensaje('error', 'Por favor, seleccione las tallas de casaca y pantalón');
         return;
     }
-
+    
     // Mostrar modal de confirmación de tallas
     const form = this;
     mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, async function() {
@@ -1012,19 +1009,19 @@ async function procesarEnvioFormulario(form) {
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
-
+    
     try {
         // Procesar imagen
         const fotoInput = document.getElementById('foto');
         const imagenData = await procesarImagen(fotoInput.files[0]);
-
+        
         // Obtener valores de los campos
         const dni = document.getElementById('dni');
         const celular = document.getElementById('celular');
         const ruc = document.getElementById('ruc');
         const cci = document.getElementById('cci');
         const cargo = document.getElementById('cargo').value;
-
+        
         // Construir objeto con TODOS los campos
         const formData = {
             nombres: document.getElementById('nombres').value,
@@ -1053,29 +1050,29 @@ async function procesarEnvioFormulario(form) {
             isUpdate: isUpdateMode // Flag para indicar si es actualización
         };
 
-
+        
         // 3. Enviar datos
         const resultado = await enviarFormulario(formData);
-
+        
         if (resultado.success) {
             const mensajeExito = isUpdateMode ? 'Datos actualizados exitosamente' : 'Registro completado exitosamente';
             mostrarMensaje('exito', mensajeExito);
-
+            
             // Limpiar formulario después de éxito
             form.reset();
             document.getElementById('preview').style.display = 'none';
             document.getElementById('ruc-info').style.display = 'none';
             document.getElementById('dni-status').textContent = '';
             ocultarImagenExistente(); // Remover vista previa de imagen existente
-
+            
             // Si estaba en modo actualización, volver a pantalla de verificación
             const wasUpdateMode = isUpdateMode;
-
+            
             // Resetear variables de modo
             isUpdateMode = false;
             existingUserData = null;
             originalFormData = {};
-
+            
             if (wasUpdateMode) {
                 setTimeout(() => {
                     document.getElementById('dni-verification-screen').style.display = 'block';
@@ -1099,7 +1096,7 @@ async function procesarEnvioFormulario(form) {
 document.getElementById('dni').addEventListener('input', function() {
     validarSoloNumeros(this);
     validarLongitud(this, 8);
-
+    
     // Validar DNI duplicado cuando tenga 8 dígitos
     if (this.value.length === 8) {
         validarDNI(this.value);
@@ -1187,11 +1184,11 @@ function normalizeValue(value) {
 function detectChanges() {
     const currentData = getCurrentFormData();
     const changes = [];
-
+    
     for (const field in originalFormData) {
         const originalValue = normalizeValue(originalFormData[field]);
         const currentValue = normalizeValue(currentData[field]);
-
+        
         // Solo agregar si realmente son diferentes
         if (originalValue !== currentValue) {
             changes.push({
@@ -1202,7 +1199,7 @@ function detectChanges() {
             });
         }
     }
-
+    
     return changes;
 }
 
@@ -1212,7 +1209,7 @@ function showConfirmationModal() {
         const changes = detectChanges();
         const fotoInput = document.getElementById('foto');
         const hasNewPhoto = fotoInput.files[0];
-
+        
         // Si hay foto nueva, agregar a los cambios
         if (hasNewPhoto) {
             changes.push({
@@ -1222,22 +1219,22 @@ function showConfirmationModal() {
                 newValue: 'Nueva foto seleccionada'
             });
         }
-
+        
         if (changes.length === 0) {
             mostrarMensaje('info', 'No se detectaron cambios en los datos');
             resolve(false);
             return;
         }
-
+        
         // Llenar el modal con los cambios (filtrar cambios válidos)
         const validChanges = changes.filter(change => change.oldValue !== change.newValue);
-
+        
         if (validChanges.length === 0) {
             mostrarMensaje('info', 'No se detectaron cambios válidos en los datos');
             resolve(false);
             return;
         }
-
+        
         const changesList = document.getElementById('changes-list');
         changesList.innerHTML = validChanges.map(change => `
             <div class="change-item">
@@ -1248,25 +1245,25 @@ function showConfirmationModal() {
                 </div>
             </div>
         `).join('');
-
+        
         // Mostrar fecha original
         document.getElementById('original-date').textContent = 
             new Date(existingUserData.fechaRegistro).toLocaleDateString();
-
+        
         // Mostrar modal
         document.getElementById('confirmation-modal').style.display = 'flex';
-
+        
         // Event listeners
         document.getElementById('cancel-update').onclick = () => {
             document.getElementById('confirmation-modal').style.display = 'none';
             resolve(false);
         };
-
+        
         document.getElementById('confirm-update').onclick = () => {
             document.getElementById('confirmation-modal').style.display = 'none';
             resolve(true);
         };
-
+        
         // Cerrar con ESC
         const handleKeyPress = (e) => {
             if (e.key === 'Escape') {
@@ -1299,28 +1296,28 @@ function convertToPreviewUrl(url) {
 function verificarDNIInicial(dni) {
     return new Promise((resolve) => {
         const statusElement = document.getElementById('verification-status');
-
+        
         if (dni.length !== 8) {
             statusElement.innerHTML = '<div style="color: #e74c3c;">El DNI debe tener 8 dígitos</div>';
             resolve(null);
             return;
         }
-
+        
         statusElement.innerHTML = '<div style="color: #3498db;">🔍 Verificando DNI...</div>';
-
+        
         // Crear callback único
         const callbackName = 'verifyCallback' + Date.now();
-
+        
         // Definir callback global
         window[callbackName] = function(result) {
             // Limpiar
             document.head.removeChild(script);
             delete window[callbackName];
-
+            
             statusElement.innerHTML = '';
             resolve(result);
         };
-
+        
         // Crear script tag para JSONP
         const script = document.createElement('script');
         script.src = `${SCRIPT_URL}?dni=${dni}&callback=${callbackName}`;
@@ -1330,9 +1327,9 @@ function verificarDNIInicial(dni) {
             delete window[callbackName];
             resolve(null);
         };
-
+        
         document.head.appendChild(script);
-
+        
         // Timeout de seguridad
         setTimeout(() => {
             if (window[callbackName]) {
@@ -1352,11 +1349,11 @@ function mostrarUsuarioExistente(userData) {
     currentUserData = userData;
     const userDetails = document.getElementById('user-details');
     const userPhoto = document.getElementById('existing-photo');
-
+    
     // Limpiar placeholders y botones anteriores
     const existingPlaceholders = document.querySelectorAll('.photo-placeholder, .photo-button');
     existingPlaceholders.forEach(element => element.remove());
-
+    
     userDetails.innerHTML = `
         <div><strong>Nombre:</strong> ${userData.nombres}</div>
         <div><strong>Apellidos:</strong> ${userData.apellido_paterno} ${userData.apellido_materno}</div>
@@ -1365,13 +1362,13 @@ function mostrarUsuarioExistente(userData) {
         <div><strong>Celular:</strong> ${userData.celular || 'No registrado'}</div>
         <div><strong>Fecha de Registro:</strong> ${new Date(userData.fechaRegistro).toLocaleDateString()}</div>
     `;
-
+    
     // Mostrar foto si existe
     if (userData.fotoUrl && userData.fotoUrl.trim() !== '') {
         // Para Google Drive, crear previsualización mejorada
         if (userData.fotoUrl.includes('drive.google.com')) {
             userPhoto.style.display = 'none';
-
+            
             // Crear contenedor de previsualización
             const photoContainer = document.createElement('div');
             photoContainer.className = 'photo-button';
@@ -1398,23 +1395,23 @@ function mostrarUsuarioExistente(userData) {
                     </button>
                 </div>
             `;
-
+            
             // Detectar si el iframe funciona (fallback para Edge)
             const iframe = photoContainer.querySelector('.photo-iframe');
             const fallback = photoContainer.querySelector('.photo-fallback');
-
+            
             iframe.onload = function() {
                 // Si carga correctamente, mostrar iframe
                 this.style.display = 'block';
                 fallback.style.display = 'none';
             };
-
+            
             iframe.onerror = function() {
                 // Si falla (Edge), mostrar fallback
                 this.style.display = 'none';
                 fallback.style.display = 'flex';
             };
-
+            
             // Timeout para detectar si no carga en Edge
             setTimeout(() => {
                 if (iframe.style.display !== 'block') {
@@ -1422,19 +1419,19 @@ function mostrarUsuarioExistente(userData) {
                     fallback.style.display = 'flex';
                 }
             }, 3000);
-
+            
             document.querySelector('.user-photo').appendChild(photoContainer);
-
+            
         } else {
             // Para otras URLs, intentar mostrar la imagen normalmente
             userPhoto.onload = function() {
                 this.style.display = 'block';
             };
-
+            
             userPhoto.onerror = function() {
                 console.warn('No se pudo cargar la imagen:', userData.fotoUrl);
                 this.style.display = 'none';
-
+                
                 const placeholder = document.createElement('div');
                 placeholder.className = 'photo-placeholder';
                 placeholder.innerHTML = '📷 Foto no disponible<br><small>Click para ver enlace</small>';
@@ -1458,13 +1455,13 @@ function mostrarUsuarioExistente(userData) {
                 };
                 this.parentNode.appendChild(placeholder);
             };
-
+            
             userPhoto.src = userData.fotoUrl;
         }
-
+        
     } else {
         userPhoto.style.display = 'none';
-
+        
         // Mostrar placeholder si no hay foto
         const placeholder = document.createElement('div');
         placeholder.className = 'photo-placeholder';
@@ -1483,7 +1480,7 @@ function mostrarUsuarioExistente(userData) {
         `;
         document.querySelector('.user-photo').appendChild(placeholder);
     }
-
+    
     document.getElementById('verification-result').style.display = 'block';
     document.getElementById('new-user-result').style.display = 'none';
 }
@@ -1515,14 +1512,14 @@ document.getElementById('dni-verificacion').addEventListener('keypress', functio
 // Botón verificar DNI
 document.getElementById('btn-verificar-dni').addEventListener('click', async function() {
     const dni = document.getElementById('dni-verificacion').value;
-
+    
     if (dni.length !== 8) {
         document.getElementById('verification-status').innerHTML = '<div style="color: #e74c3c;">Por favor ingrese 8 dígitos</div>';
         return;
     }
-
+    
     const result = await verificarDNIInicial(dni);
-
+    
     if (result && !result.success && result.error === 'DNI_ALREADY_EXISTS') {
         mostrarUsuarioExistente(result.existingData);
     } else if (result && result.success) {
@@ -1535,18 +1532,18 @@ document.getElementById('btn-verificar-dni').addEventListener('click', async fun
 // Botón actualizar datos
 document.getElementById('btn-actualizar-datos').addEventListener('click', function() {
     if (!currentUserData) return;
-
+    
     // Cambiar a modo actualización
     isUpdateMode = true;
     existingUserData = currentUserData;
-
+    
     // Mostrar formulario
     document.getElementById('dni-verification-screen').style.display = 'none';
     document.getElementById('registroForm').style.display = 'block';
-
+    
     // Prellenar DNI
     document.getElementById('dni').value = currentUserData.dni;
-
+    
     // Cargar todos los datos
     cargarDatosExistentes();
 });
@@ -1554,28 +1551,28 @@ document.getElementById('btn-actualizar-datos').addEventListener('click', functi
 // Botón ver datos (solo lectura)
 document.getElementById('btn-ver-datos').addEventListener('click', function() {
     if (!currentUserData) return;
-
+    
     // Cambiar a modo solo lectura
     isUpdateMode = false;
     existingUserData = currentUserData;
-
+    
     // Mostrar formulario
     document.getElementById('dni-verification-screen').style.display = 'none';
     document.getElementById('registroForm').style.display = 'block';
-
+    
     // Prellenar DNI
     document.getElementById('dni').value = currentUserData.dni;
-
+    
     // Cargar todos los datos
     cargarDatosExistentes();
-
+    
     // Deshabilitar todos los campos
     const inputs = document.querySelectorAll('#registroForm input, #registroForm select, #registroForm textarea');
     inputs.forEach(input => input.disabled = true);
-
+    
     // Ocultar botón de envío
     document.querySelector('button[type="submit"]').style.display = 'none';
-
+    
     mostrarMensaje('exito', 'Datos cargados en modo solo lectura.');
 });
 
@@ -1585,20 +1582,20 @@ document.getElementById('btn-nuevo-registro').addEventListener('click', function
     isUpdateMode = false;
     existingUserData = null;
     currentUserData = null;
-
+    
     // Mostrar formulario vacío
     document.getElementById('dni-verification-screen').style.display = 'none';
     document.getElementById('registroForm').style.display = 'block';
-
+    
     // Prellenar el DNI verificado
     document.getElementById('dni').value = document.getElementById('dni-verificacion').value;
-
+    
     // Asegurar que la foto sea obligatoria para nuevo registro
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.setAttribute('required', '');
     }
-
+    
     mostrarMensaje('exito', 'Puede proceder con el registro de nuevo usuario.');
 });
 
@@ -1610,56 +1607,56 @@ document.getElementById('btn-volver-verificacion').addEventListener('click', fun
     document.getElementById('ruc-info').style.display = 'none';
     document.getElementById('dni-status').textContent = '';
     document.getElementById('dni-error').textContent = '';
-
+    
     // Habilitar todos los campos
     const inputs = document.querySelectorAll('#registroForm input, #registroForm select, #registroForm textarea');
     inputs.forEach(input => input.disabled = false);
-
+    
     // Mostrar botón de envío
     document.querySelector('button[type="submit"]').style.display = 'inline-block';
-
+    
     // Resetear variables
     isUpdateMode = false;
     existingUserData = null;
     currentUserData = null;
     rucActivo = 'No';
     rucHabido = 'No';
-
+    
     // Limpiar pantalla de verificación
     document.getElementById('dni-verificacion').value = '';
     document.getElementById('verification-status').innerHTML = '';
     document.getElementById('verification-result').style.display = 'none';
     document.getElementById('new-user-result').style.display = 'none';
-
+    
     // Limpiar elementos de foto
     const photoElements = document.querySelectorAll('.photo-placeholder, .photo-button');
     photoElements.forEach(element => element.remove());
-
+    
     // Mostrar pantalla de verificación
     document.getElementById('dni-verification-screen').style.display = 'block';
     document.getElementById('registroForm').style.display = 'none';
-
+    
     // Restaurar texto del botón
     const submitBtn = document.querySelector('button[type="submit"]');
     submitBtn.textContent = 'Enviar Formulario';
-
+    
     // Restaurar textos originales de la foto y required
     const fotoLabel = document.querySelector('label[for="foto"]');
     if (fotoLabel) {
         fotoLabel.innerHTML = 'Foto personal para credencial <span class="required"></span>';
     }
-
+    
     // IMPORTANTE: Restaurar el atributo required del campo foto
     const fotoInput = document.getElementById('foto');
     if (fotoInput) {
         fotoInput.setAttribute('required', '');
     }
-
+    
     const fileUploadText = document.querySelector('.file-upload-btn p');
     if (fileUploadText) {
         fileUploadText.textContent = 'Haz clic para subir tu foto';
     }
-
+    
     const fileUploadSmall = document.querySelector('.file-upload-btn small');
     if (fileUploadSmall) {
         fileUploadSmall.innerHTML = 'Formatos aceptados: JPG, PNG (Máx. 2MB)';
