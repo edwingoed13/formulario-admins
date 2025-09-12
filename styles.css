@@ -915,6 +915,9 @@ button:hover {
     width: 100%;
     height: 100%;
     position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .photo-iframe {
@@ -922,6 +925,30 @@ button:hover {
     height: 100%;
     border: none;
     display: block;
+    border-radius: 8px;
+    object-fit: cover;
+    transform: scale(1.1);
+    transform-origin: center;
+}
+
+/* Estilos adicionales para mejorar la visualización del iframe */
+.photo-preview-container {
+    position: relative;
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.photo-preview-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .photo-fallback {
