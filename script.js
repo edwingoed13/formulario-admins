@@ -893,15 +893,30 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
     
     // Configurar botón de confirmación - prevenir múltiples clicks
     const btnConfirmar = document.getElementById('btn-confirmar-tallas');
+    let isProcessing = false; // Variable para controlar el procesamiento
+    
     btnConfirmar.onclick = function(e) {
         e.preventDefault();
         
-        // Deshabilitar botón inmediatamente para prevenir doble click
+        // Prevenir múltiples clicks
+        if (isProcessing) return;
+        isProcessing = true;
+        
+        // Cambiar texto para indicar procesamiento
+        const originalText = this.textContent;
         this.disabled = true;
         this.textContent = 'Procesando...';
         
+        // Cerrar modal inmediatamente
         cerrarModalTallas();
+        
+        // Ejecutar callback
         if (callback) callback();
+        
+        // Resetear estado después de un tiempo
+        setTimeout(() => {
+            isProcessing = false;
+        }, 1000);
     };
 }
 
