@@ -902,21 +902,23 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
         if (isProcessing) return;
         isProcessing = true;
         
-        // Cambiar texto para indicar procesamiento
-        const originalText = this.textContent;
-        this.disabled = true;
-        this.textContent = 'Procesando...';
-        
-        // Cerrar modal inmediatamente
-        cerrarModalTallas();
-        
-        // Ejecutar callback
-        if (callback) callback();
-        
-        // Resetear estado después de un tiempo
+        // Cerrar modal inmediatamente usando setTimeout para asegurar que se cierre
         setTimeout(() => {
-            isProcessing = false;
-        }, 1000);
+            const modalToClose = document.querySelector('.modal-overlay');
+            if (modalToClose) {
+                modalToClose.remove();
+            }
+            
+            // Ejecutar callback después de cerrar el modal
+            if (callback) {
+                callback();
+            }
+            
+            // Resetear estado
+            setTimeout(() => {
+                isProcessing = false;
+            }, 500);
+        }, 100);
     };
 }
 
