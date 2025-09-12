@@ -616,7 +616,7 @@ function cargarDatosExistentes() {
         mostrarImagenExistente(data.fotoUrl);
     }
     
-    mostrarMensaje('exito', 'Datos cargados correctamente. Puede modificar los campos y actualizar.');
+    mostrarMensaje('exito', 'Datos cargados para actualización. Puede modificar los campos necesarios.');
 }
 
 // Limpiar formulario y salir del modo actualización
@@ -1543,8 +1543,6 @@ document.getElementById('btn-actualizar-datos').addEventListener('click', functi
     
     // Cargar todos los datos
     cargarDatosExistentes();
-    
-    mostrarMensaje('exito', 'Datos cargados. Puede modificar los campos necesarios.');
 });
 
 // Botón ver datos (solo lectura)
