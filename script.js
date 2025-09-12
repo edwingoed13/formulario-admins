@@ -228,9 +228,8 @@ function mostrarImagenExistente(imageUrl) {
                     </div>
                 </div>
             </div>
-            <div class="photo-actions" style="text-align: center; margin-top: 10px;">
-                <button type="button" class="btn-view-photo" onclick="window.open('${imageUrl}', '_blank')" 
-                        style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            <div class="photo-actions">
+                <button type="button" class="btn-view-photo" onclick="window.open('${imageUrl}', '_blank')">
                     👁️ Ver Foto Original
                 </button>
             </div>
@@ -280,9 +279,8 @@ function mostrarImagenExistente(imageUrl) {
                     <div><strong>Foto no disponible</strong><br><small>Click para ver enlace</small></div>
                 </div>
             </div>
-            <div class="photo-actions" style="text-align: center; margin-top: 10px;">
-                <button type="button" class="btn-view-photo" onclick="window.open('${imageUrl}', '_blank')"
-                        style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            <div class="photo-actions">
+                <button type="button" class="btn-view-photo" onclick="window.open('${imageUrl}', '_blank')">
                     👁️ Ver Foto Original
                 </button>
             </div>
@@ -320,6 +318,8 @@ function mostrarImagenExistente(imageUrl) {
                 padding: 15px;
                 margin-bottom: 15px;
                 background: #f8f9ff;
+                text-align: center;
+                max-width: 100%;
             }
             .existing-image-header {
                 display: flex;
@@ -352,20 +352,22 @@ function mostrarImagenExistente(imageUrl) {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                margin: 15px 0;
+                margin: 20px auto;
+                width: 100%;
             }
             .photo-iframe-wrapper {
                 position: relative;
                 overflow: hidden;
                 border-radius: 8px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                width: 200px;
-                height: 200px;
-                max-width: 100%;
+                width: min(250px, 90vw);
+                height: min(250px, 90vw);
+                max-width: 250px;
+                max-height: 250px;
             }
             .photo-fallback {
-                width: 200px;
-                height: 200px;
+                width: 100%;
+                height: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -377,8 +379,27 @@ function mostrarImagenExistente(imageUrl) {
                 color: #6c757d;
             }
             .photo-icon {
-                font-size: 48px;
+                font-size: min(48px, 12vw);
                 margin-bottom: 10px;
+            }
+            .photo-text {
+                font-size: min(14px, 3.5vw);
+                text-align: center;
+                padding: 0 10px;
+            }
+            .photo-actions {
+                text-align: center;
+                margin: 15px 0 10px 0;
+            }
+            .btn-view-photo {
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: min(14px, 3.5vw);
+                transition: background 0.3s;
             }
             .update-note {
                 text-align: center;
@@ -388,6 +409,51 @@ function mostrarImagenExistente(imageUrl) {
             }
             .btn-view-photo:hover {
                 background: #0056b3 !important;
+            }
+            .update-note {
+                font-size: min(12px, 3vw);
+            }
+            
+            /* Responsive breakpoints */
+            @media (max-width: 768px) {
+                .existing-image-preview {
+                    margin: 10px;
+                    padding: 12px;
+                }
+                .photo-iframe-wrapper {
+                    width: min(200px, 85vw);
+                    height: min(200px, 85vw);
+                }
+                .btn-view-photo {
+                    padding: 6px 12px;
+                    font-size: 12px;
+                }
+                .existing-image-header {
+                    flex-direction: column;
+                    gap: 8px;
+                    align-items: center;
+                }
+                .existing-image-header strong {
+                    font-size: 14px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .existing-image-preview {
+                    padding: 10px;
+                    margin: 5px;
+                }
+                .photo-iframe-wrapper {
+                    width: min(180px, 80vw);
+                    height: min(180px, 80vw);
+                }
+                .btn-view-photo {
+                    padding: 5px 10px;
+                    font-size: 11px;
+                }
+                .update-note small {
+                    font-size: 10px;
+                }
             }
         `;
         document.head.appendChild(styles);
