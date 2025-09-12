@@ -926,29 +926,16 @@ button:hover {
     border: none;
     display: block;
     border-radius: 8px;
-    object-fit: cover;
-    transform: scale(1.1);
-    transform-origin: center;
 }
 
-/* Estilos adicionales para mejorar la visualización del iframe */
+/* Estilos para el contenedor de previsualización de fotos */
 .photo-preview-container {
     position: relative;
-    background: #f8f9fa;
     border-radius: 8px;
     overflow: hidden;
-}
-
-.photo-preview-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    z-index: 1;
-    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .photo-fallback {
