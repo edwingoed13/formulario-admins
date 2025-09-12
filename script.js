@@ -725,6 +725,10 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
     const titulo = esActualizacion ? 'Confirmar Actualización de Tallas' : 'Confirmar Tallas Seleccionadas';
     const textoBoton = esActualizacion ? 'Confirmar y Actualizar' : 'Confirmar y Enviar';
     
+    // Determinar el sexo para mostrar DAMAS o VARONES
+    const sexo = document.querySelector('input[name="sexo"]:checked')?.value;
+    const tipoTalla = sexo === 'F' ? 'DAMAS' : 'VARONES';
+    
     // Crear modal
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -732,9 +736,10 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
         <div class="modal-content">
             <div class="modal-header">
                 <h3>${titulo}</h3>
+                <div class="tipo-talla-badge">${tipoTalla}</div>
             </div>
             <div class="modal-body">
-                <p>Por favor, confirme las tallas seleccionadas:</p>
+                <p>Por favor, confirme las tallas seleccionadas para <strong>${tipoTalla}</strong>:</p>
                 <div class="tallas-confirmacion">
                     <div class="talla-item">
                         <strong>Talla de Casaca:</strong>
@@ -786,10 +791,21 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
                 color: white;
                 padding: 20px;
                 border-radius: 12px 12px 0 0;
+                position: relative;
             }
             .modal-header h3 {
                 margin: 0;
                 font-size: 1.3em;
+                margin-bottom: 8px;
+            }
+            .tipo-talla-badge {
+                display: inline-block;
+                background: rgba(255, 255, 255, 0.2);
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 0.9em;
+                font-weight: bold;
+                border: 1px solid rgba(255, 255, 255, 0.3);
             }
             .modal-body {
                 padding: 25px;
@@ -875,8 +891,15 @@ function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
     // Agregar modal al DOM
     document.body.appendChild(modal);
     
-    // Configurar botón de confirmación
-    document.getElementById('btn-confirmar-tallas').onclick = function() {
+    // Configurar botón de confirmación - prevenir múltiples clicks
+    const btnConfirmar = document.getElementById('btn-confirmar-tallas');
+    btnConfirmar.onclick = function(e) {
+        e.preventDefault();
+        
+        // Deshabilitar botón inmediatamente para prevenir doble click
+        this.disabled = true;
+        this.textContent = 'Procesando...';
+        
         cerrarModalTallas();
         if (callback) callback();
     };
