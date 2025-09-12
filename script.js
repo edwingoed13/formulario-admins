@@ -157,7 +157,7 @@ function mostrarImagenExistente(imageUrl) {
         existingImageContainer.innerHTML = `
             <div class="existing-image-header">
                 <strong>📷 Foto actual registrada</strong>
-                <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">✕</button>
+                <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">×</button>
             </div>
             <div class="photo-preview-container">
                 <div class="photo-iframe-wrapper" style="width: 250px; height: 250px; margin: 0 auto;">
@@ -232,7 +232,7 @@ function mostrarImagenExistente(imageUrl) {
         existingImageContainer.innerHTML = `
             <div class="existing-image-header">
                 <strong>📷 Foto actual registrada</strong>
-                <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">✕</button>
+                <button type="button" class="btn-remove-preview" onclick="ocultarImagenExistente()">×</button>
             </div>
             <div class="image-container" style="text-align: center;">
                 <img src="${imageUrl}" alt="Foto existente" class="existing-image" 
@@ -299,7 +299,12 @@ function mostrarImagenExistente(imageUrl) {
                 width: 25px;
                 height: 25px;
                 cursor: pointer;
-                font-size: 12px;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+                padding: 0;
                 transition: background 0.3s;
             }
             .btn-remove-preview:hover {
@@ -713,6 +718,178 @@ async function enviarFormulario(formData) {
     }
 }
 
+// Función para crear y mostrar modal de confirmación de tallas
+function mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, callback) {
+    // Determinar si es actualización o nuevo registro
+    const esActualizacion = isUpdateMode;
+    const titulo = esActualizacion ? 'Confirmar Actualización de Tallas' : 'Confirmar Tallas Seleccionadas';
+    const textoBoton = esActualizacion ? 'Confirmar y Actualizar' : 'Confirmar y Enviar';
+    
+    // Crear modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>${titulo}</h3>
+            </div>
+            <div class="modal-body">
+                <p>Por favor, confirme las tallas seleccionadas:</p>
+                <div class="tallas-confirmacion">
+                    <div class="talla-item">
+                        <strong>Talla de Casaca:</strong>
+                        <span class="talla-value">${tallaCasaca.replace('C-', '')}</span>
+                    </div>
+                    <div class="talla-item">
+                        <strong>Talla de Pantalón:</strong>
+                        <span class="talla-value">${tallaPantalon.replace('P-', '')}</span>
+                    </div>
+                </div>
+                <p class="modal-note">⚠️ Es importante verificar sus tallas antes de confirmar</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="cerrarModalTallas()">Modificar</button>
+                <button type="button" class="btn-modal btn-confirm" id="btn-confirmar-tallas">${textoBoton}</button>
+            </div>
+        </div>
+    `;
+    
+    // Agregar estilos del modal si no existen
+    if (!document.getElementById('modal-styles')) {
+        const modalStyles = document.createElement('style');
+        modalStyles.id = 'modal-styles';
+        modalStyles.textContent = `
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            }
+            .modal-content {
+                background: white;
+                border-radius: 12px;
+                padding: 0;
+                max-width: 450px;
+                width: 90%;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            }
+            .modal-header {
+                background: #007bff;
+                color: white;
+                padding: 20px;
+                border-radius: 12px 12px 0 0;
+            }
+            .modal-header h3 {
+                margin: 0;
+                font-size: 1.3em;
+            }
+            .modal-body {
+                padding: 25px;
+            }
+            .modal-body p {
+                margin-bottom: 15px;
+                color: #333;
+            }
+            .tallas-confirmacion {
+                background: #f8f9fa;
+                border: 2px solid #007bff;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+            }
+            .talla-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #dee2e6;
+            }
+            .talla-item:last-child {
+                border-bottom: none;
+            }
+            .talla-value {
+                background: #007bff;
+                color: white;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-weight: bold;
+                font-size: 1.1em;
+            }
+            .modal-note {
+                color: #ff6b6b;
+                font-size: 0.9em;
+                text-align: center;
+                margin-top: 15px;
+            }
+            .modal-footer {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+                border-top: 1px solid #dee2e6;
+                gap: 10px;
+            }
+            .btn-modal {
+                flex: 1;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 6px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-size: 1em;
+            }
+            .btn-cancel {
+                background: #6c757d;
+                color: white;
+            }
+            .btn-cancel:hover {
+                background: #5a6268;
+            }
+            .btn-confirm {
+                background: #28a745;
+                color: white;
+            }
+            .btn-confirm:hover {
+                background: #218838;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideIn {
+                from { transform: translateY(-30px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(modalStyles);
+    }
+    
+    // Agregar modal al DOM
+    document.body.appendChild(modal);
+    
+    // Configurar botón de confirmación
+    document.getElementById('btn-confirmar-tallas').onclick = function() {
+        cerrarModalTallas();
+        if (callback) callback();
+    };
+}
+
+// Función para cerrar el modal de tallas
+function cerrarModalTallas() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 // Manejador de envío del formulario
 document.getElementById('registroForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -782,15 +959,42 @@ document.getElementById('registroForm').addEventListener('submit', async functio
     }
     
     if (!isValid) return;
+    
+    // Obtener tallas seleccionadas
+    const tallaCasaca = document.getElementById('talla_casaca').value;
+    const tallaPantalon = document.getElementById('talla_pantalon').value;
+    
+    // Validar que las tallas estén seleccionadas
+    if (!tallaCasaca || !tallaPantalon) {
+        mostrarMensaje('error', 'Por favor, seleccione las tallas de casaca y pantalón');
+        return;
+    }
+    
+    // Mostrar modal de confirmación de tallas
+    const form = this;
+    mostrarModalConfirmacionTallas(tallaCasaca, tallaPantalon, async function() {
+        await procesarEnvioFormulario(form);
+    });
+});
 
+// Función separada para procesar el envío del formulario
+async function procesarEnvioFormulario(form) {
     // 2. Preparar envío
-    const submitBtn = this.querySelector('button[type="submit"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
     
     try {
         // Procesar imagen
+        const fotoInput = document.getElementById('foto');
         const imagenData = await procesarImagen(fotoInput.files[0]);
+        
+        // Obtener valores de los campos
+        const dni = document.getElementById('dni');
+        const celular = document.getElementById('celular');
+        const ruc = document.getElementById('ruc');
+        const cci = document.getElementById('cci');
+        const cargo = document.getElementById('cargo').value;
         
         // Construir objeto con TODOS los campos
         const formData = {
@@ -829,7 +1033,7 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             mostrarMensaje('exito', mensajeExito);
             
             // Limpiar formulario después de éxito
-            this.reset();
+            form.reset();
             document.getElementById('preview').style.display = 'none';
             document.getElementById('ruc-info').style.display = 'none';
             document.getElementById('dni-status').textContent = '';
@@ -857,9 +1061,10 @@ document.getElementById('registroForm').addEventListener('submit', async functio
         mostrarMensaje('error', 'Error: ' + error.message);
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Enviar Formulario';
+        const btnText = isUpdateMode ? 'Actualizar Registro' : 'Enviar Formulario';
+        submitBtn.textContent = btnText;
     }
-});
+}
 
 // Event listeners para los campos de entrada
 document.getElementById('dni').addEventListener('input', function() {
